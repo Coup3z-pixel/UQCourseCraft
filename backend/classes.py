@@ -20,7 +20,7 @@ class Time:
         self.duration = duration
         self.percent_booked = percent_booked
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"""Time(activity_number={self.activity_number}, 
             day={self.day}, 
             start_time={self.start_time}, 
@@ -30,7 +30,7 @@ class Time:
 
 
 class Class:
-    def __init__(self, course_code: str, class_type: str, times: list[Time]):
+    def __init__(self, course_code: str, class_type: str, times: list[Time]) -> None:
         """
         Initialize a class with a type and a list of times.
 
@@ -42,5 +42,5 @@ class Class:
         self.class_type = class_type
         self.times = times
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"""Class(course_code={self.course_code}, class_type={self.class_type}, times={self.times})"""
