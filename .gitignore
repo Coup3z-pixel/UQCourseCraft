@@ -20,6 +20,7 @@ frontend/coverage
 frontend/build
 
 # misc
+frontend/.react-router/
 frontend/.DS_Store
 frontend/.env.local
 frontend/.env.development.local

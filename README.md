@@ -9,3 +9,6 @@ Stage 4: Days at Uni - Intrinsically minimised
 Stage 5: Consecutive hours - Intrinsically minimised
 Stage 6: Try to allocate a lunch break
 Stage 7: Align with friends
+
+# AI Referencing
+App.tsx - Lovable
