@@ -9,7 +9,7 @@ Course Data: A dictionary mapping course codes to a list of class types, each co
 Output: A dictionary mapping the course code and class type to the ideal preferences.
 """
 
-def solve_timetable(time_slots: dict[list[int]], classes: list[list[]]) -> dict:
+def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     """
     Solve the timetabling problem by finding the best fit for course classes into user preferences.
     
