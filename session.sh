@@ -17,7 +17,7 @@ then
     # Name first Pane and start zsh
     tmux new-window -t $SESSION:1 -n 'frontend'
 	tmux send-keys -t 'frontend' 'cd ./frontend' C-m
-    tmux send-keys -t 'frontend' 'pnpm run start' C-m 'clear' C-m # Switch to bind script?
+    tmux send-keys -t 'frontend' 'pnpm run dev' C-m 'clear' C-m # Switch to bind script?
 
 	tmux new-window -t $SESSION:2 -n 'flask'
 	tmux send-keys -t 'flask' 'cd ./backend' C-m
