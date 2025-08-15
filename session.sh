@@ -22,7 +22,7 @@ then
 	tmux new-window -t $SESSION:2 -n 'flask'
 	tmux send-keys -t 'flask' 'cd ./backend' C-m
 	tmux send-keys -t 'flask' 'source .venv/bin/activate' C-m
-	tmux send-keys -t 'flask' 'flask --app flaskr run --debug' C-m 'clear' C-m
+	tmux send-keys -t 'flask' 'flask --app main run --debug' C-m 'clear' C-m
 
     # Setup an additional shell
     tmux new-window -t $SESSION:3 -n 'Shell'
