@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    {
+      "id": "rec_001",
+      "name": "Best Overall",
+      "score": 95,
+      "conflicts": 0,
+      "grid": [/* 3D array as before */]
+    },
+    {
+      "id": "rec_002", 
+      "name": "Minimal Conflicts",
+      "score": 88,
+      "conflicts": 1,
+      "grid": [/* 3D array as before */]
+    }
+  ]
+}
