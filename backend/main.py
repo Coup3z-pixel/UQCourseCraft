@@ -91,7 +91,8 @@ def recommend_timetable():
         courses_activities.append(parse_course_timetable(course_timetable, course))
 
     print(courses_activities)
-        
+
+    # solve timetable
     
     return {
         "recommendations": [
