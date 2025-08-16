@@ -65,12 +65,7 @@ def convertTime(time: str) -> float:
     return int(hours) + (int(minutes) / 60)
 
 def convertActivityNumber(activityNum: str) -> int:
-    if "-" in activityNum: 
-        num, _ = activityNum.split("-")
-    else:
-        num = activityNum
-
-    return int(num)
+    return int(activityNum[:2])
 
 def convertMinToHours(duration: str) -> float:
     return int(duration) / 60
