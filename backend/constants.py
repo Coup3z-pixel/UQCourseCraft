@@ -24,3 +24,7 @@ NUMBER_OF_TIME_SLOTS = 48  # 24 hours * 2 (half-hour increments)
 IDEAL = 3
 OKAY = 2
 BAD = 1
+
+ALWAYS_AVAILABLE = {
+    day: [IDEAL] * NUMBER_OF_TIME_SLOTS for day in DAYS
+}
