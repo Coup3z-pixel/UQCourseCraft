@@ -1,3 +1,4 @@
+from conversion import *
 from algorithm import *
 from constants import *
 from classes import *
@@ -76,5 +77,15 @@ convertForAlgorithmTimeSlots({
   "TUE-9:30": {
     "preference": "preferred",
     "rank": 3
+  }})
+
+convertForAlgorithmTimeSlots({
+  "TUE-22:00": {
+    "preference": "preferred",
+    "rank": 1
+  },
+  "TUE-22:30": {
+    "preference": "preferred",
+    "rank": 1
   }})
 """
