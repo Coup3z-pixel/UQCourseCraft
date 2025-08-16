@@ -54,8 +54,6 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
         If a valid arrangement is found, it is added to the valid_schedules list.
 
         Args:
-            schedule (dict): The current timetable, mapping days to lists of time slots.
-            classes (list[Class]): List of Class objects to be scheduled.
             i (int): The index of the class currently being considered.
         """
         if i == len(classes):
@@ -74,7 +72,6 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
                 deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
 
         return False
-
 
     backtrack(0)
     if not schedule_heap.heap:
