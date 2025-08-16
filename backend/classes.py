@@ -40,7 +40,7 @@ class Time:
 
 
 class Class:
-    def __init__(self, course_code: str, class_type: str, times: list[Time]) -> None:
+    def __init__(self, course_code: str, class_type: str, subclass_type: str, times: list[Time]) -> None:
         """
         Initialize a class with a type and a list of times.
 
@@ -50,10 +50,11 @@ class Class:
         """
         self.course_code = course_code
         self.class_type = class_type
+        self.subclass_type = subclass_type
         self.times = times
     
     def __repr__(self) -> str:
-        return f"""Class(course_code={self.course_code}, class_type={self.class_type}, times={self.times})"""
+        return f"""Class(course_code={self.course_code}, class_type={self.class_type}, subclass_type={self.subclass_type}, times={self.times})"""
     
     def add_time(self, time: Time) -> None:
         self.times.append(time)
