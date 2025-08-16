@@ -9,11 +9,11 @@ import pytest
 class TestTrimClasses:
     def test_trims_unavailable_classes(self):
         time_slots = {
-            MON: [4] * 48,
-            TUE: [4] * 48,
-            WED: [0] * 48,
-            THU: [0] * 48,
-            FRI: [0] * 48
+            MON: [4] * NUMBER_OF_TIME_SLOTS,
+            TUE: [4] * NUMBER_OF_TIME_SLOTS,
+            WED: [0] * NUMBER_OF_TIME_SLOTS,
+            THU: [0] * NUMBER_OF_TIME_SLOTS,
+            FRI: [0] * NUMBER_OF_TIME_SLOTS
         }
 
         sample_classes = [

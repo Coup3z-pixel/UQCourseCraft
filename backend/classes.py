@@ -15,7 +15,7 @@ class Time:
             duration (int): The duration of the class in hours.
             percent_booked (int): The percentage of people that booked into the class compared to its capacity.
         """
-        self.activity_code= activity_code
+        self.activity_code = activity_code
         self.day = day
         self.start_time = start_time
         self.duration = duration
