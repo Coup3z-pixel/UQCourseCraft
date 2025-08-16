@@ -103,7 +103,7 @@ def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: lis
         if allocate_class(schedule, class_, time):
             if backtrack(schedule, classes, i + 1, valid_schedules):
                 # Don't return early
-                pass  # If a valid arrangement is found, return immediately
+                pass # If a valid arrangement is found, return immediately
 
             deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
     return False
@@ -144,11 +144,11 @@ Area below is for testing purposes only.
 def test_solve_timetable_sample():
     # Sample time slots: all slots are ideal (3) for Monday and Tuesday, unavailable (0) for other days
     time_slots = {
-        MON: [3] * 28 + [0] * 20,  # 28 ideal slots for Monday
-        TUE: [3] * 28 + [0] * 20,  # 28 ideal slots for Tuesday
-        WED: [3] * 48,  # All slots ideal for Wednesday
-        THU: [3] * 48,  # All slots ideal for Thursday
-        FRI: [3] * 48   # All slots ideal for Friday
+        MON: [3] * 30 + [0] * 20,  # First half ideal, second half unavailable
+        TUE: [3] * 30 + [0] * 20,
+        WED: [3] * 36 + [0] * 12,
+        THU: [3] * 30 + [0] * 20,
+        FRI: [3] * 30 + [0] * 20
     }
 
     sample_classes = [
@@ -157,72 +157,112 @@ def test_solve_timetable_sample():
             Time(1, MON, 8.0, 1.0, 50)
         ]),
         Class(course_code="MATH101", class_type="TUT", times=[
-            Time(2, TUE, 13.0, 1.0, 40),
-            Time(3, WED, 13.0, 1.0, 50),
-            Time(4, THU, 13.0, 1.0, 60),
-            Time(5, FRI, 13.0, 1.0, 70),
-            Time(6, FRI, 15.0, 1.0, 75)
+            Time(2, TUE, 8.0, 1.0, 40),
+            Time(3, TUE, 10.0, 1.0, 45),
+            Time(4, TUE, 12.0, 1.0, 50),
+            Time(5, TUE, 14.0, 1.0, 55),
+            Time(6, TUE, 16.0, 1.0, 60),
+            Time(7, WED, 8.0, 1.0, 65),
+            Time(8, WED, 10.0, 1.0, 70),
+            Time(9, WED, 12.0, 1.0, 75),
+            Time(10, WED, 14.0, 1.0, 80),
+            Time(11, WED, 16.0, 1.0, 85)
         ]),
         Class(course_code="MATH101", class_type="LAB", times=[
-            Time(7, TUE, 17.0, 1.0, 30),
-            Time(8, WED, 17.0, 1.0, 40),
-            Time(9, THU, 17.0, 1.0, 50),
-            Time(10, FRI, 17.0, 1.0, 60),
-            Time(11, FRI, 18.0, 1.0, 65)
+            Time(12, THU, 8.0, 1.0, 30),
+            Time(13, THU, 10.0, 1.0, 35),
+            Time(14, THU, 12.0, 1.0, 40),
+            Time(15, THU, 14.0, 1.0, 45),
+            Time(16, THU, 16.0, 1.0, 50),
+            Time(17, FRI, 8.0, 1.0, 55),
+            Time(18, FRI, 10.0, 1.0, 60),
+            Time(19, FRI, 12.0, 1.0, 65),
+            Time(20, FRI, 14.0, 1.0, 70),
+            Time(21, FRI, 16.0, 1.0, 75)
         ]),
         # PHYS102
         Class(course_code="PHYS102", class_type="LEC", times=[
-            Time(12, TUE, 9.0, 1.0, 55)
+            Time(22, TUE, 11.0, 1.0, 55)
         ]),
         Class(course_code="PHYS102", class_type="TUT", times=[
-            Time(13, WED, 14.0, 1.0, 45),
-            Time(14, THU, 14.0, 1.0, 55),
-            Time(15, FRI, 14.0, 1.0, 65),
-            Time(16, FRI, 16.0, 1.0, 70),
-            Time(17, FRI, 18.0, 1.0, 75)
+            Time(23, WED, 8.0, 1.0, 45),
+            Time(24, WED, 10.0, 1.0, 50),
+            Time(25, WED, 12.0, 1.0, 55),
+            Time(26, WED, 14.0, 1.0, 60),
+            Time(27, WED, 16.0, 1.0, 65),
+            Time(28, THU, 8.0, 1.0, 70),
+            Time(29, THU, 10.0, 1.0, 75),
+            Time(30, THU, 12.0, 1.0, 80),
+            Time(31, THU, 14.0, 1.0, 85),
+            Time(32, THU, 16.0, 1.0, 90)
         ]),
         Class(course_code="PHYS102", class_type="LAB", times=[
-            Time(18, WED, 18.0, 1.0, 45),
-            Time(19, THU, 18.0, 1.0, 55),
-            Time(20, FRI, 18.0, 1.0, 65),
-            Time(21, FRI, 19.0, 1.0, 70),
-            Time(22, FRI, 20.0, 1.0, 75)
+            Time(33, FRI, 8.0, 1.0, 45),
+            Time(34, FRI, 10.0, 1.0, 50),
+            Time(35, FRI, 12.0, 1.0, 55),
+            Time(36, FRI, 14.0, 1.0, 60),
+            Time(37, FRI, 16.0, 1.0, 65),
+            Time(38, FRI, 18.0, 1.0, 70),
+            Time(39, FRI, 19.0, 1.0, 75),
+            Time(40, FRI, 20.0, 1.0, 80),
+            Time(41, FRI, 21.0, 1.0, 85),
+            Time(42, FRI, 22.0, 1.0, 90)
         ]),
         # CHEM103
         Class(course_code="CHEM103", class_type="LEC", times=[
-            Time(23, WED, 10.0, 1.0, 75)
+            Time(43, WED, 16.0, 1.0, 75)
         ]),
         Class(course_code="CHEM103", class_type="TUT", times=[
-            Time(24, THU, 13.0, 1.0, 65),
-            Time(25, FRI, 13.0, 1.0, 70),
-            Time(26, FRI, 15.0, 1.0, 75),
-            Time(27, FRI, 17.0, 1.0, 80),
-            Time(28, FRI, 19.0, 1.0, 85)
+            Time(44, THU, 8.0, 1.0, 65),
+            Time(45, THU, 10.0, 1.0, 70),
+            Time(46, THU, 12.0, 1.0, 75),
+            Time(47, THU, 14.0, 1.0, 80),
+            Time(48, THU, 16.0, 1.0, 85),
+            Time(49, FRI, 8.0, 1.0, 90),
+            Time(50, FRI, 10.0, 1.0, 95),
+            Time(51, FRI, 12.0, 1.0, 100),
+            Time(52, FRI, 14.0, 1.0, 105),
+            Time(53, FRI, 16.0, 1.0, 110)
         ]),
         Class(course_code="CHEM103", class_type="LAB", times=[
-            Time(29, THU, 18.0, 1.0, 55),
-            Time(30, FRI, 17.0, 1.0, 60),
-            Time(31, FRI, 18.0, 1.0, 65),
-            Time(32, FRI, 19.0, 1.0, 70),
-            Time(33, FRI, 20.0, 1.0, 75)
+            Time(54, FRI, 8.0, 1.0, 55),
+            Time(55, FRI, 10.0, 1.0, 60),
+            Time(56, FRI, 12.0, 1.0, 65),
+            Time(57, FRI, 14.0, 1.0, 70),
+            Time(58, FRI, 16.0, 1.0, 75),
+            Time(59, FRI, 18.0, 1.0, 80),
+            Time(60, FRI, 19.0, 1.0, 85),
+            Time(61, FRI, 20.0, 1.0, 90),
+            Time(62, FRI, 21.0, 1.0, 95),
+            Time(63, FRI, 22.0, 1.0, 100)
         ]),
         # CS104
         Class(course_code="CS104", class_type="LEC", times=[
-            Time(34, THU, 9.0, 1.0, 80)
+            Time(64, THU, 13.0, 1.0, 80)
         ]),
         Class(course_code="CS104", class_type="TUT", times=[
-            Time(35, FRI, 10.0, 1.0, 90),
-            Time(36, FRI, 12.0, 1.0, 95),
-            Time(37, FRI, 14.0, 1.0, 100),
-            Time(38, FRI, 16.0, 1.0, 105),
-            Time(39, FRI, 18.0, 1.0, 110)
+            Time(65, FRI, 8.0, 1.0, 90),
+            Time(66, FRI, 9.0, 1.0, 92),
+            Time(67, FRI, 10.0, 1.0, 94),
+            Time(68, FRI, 11.0, 1.0, 96),
+            Time(69, FRI, 12.0, 1.0, 98),
+            Time(70, FRI, 13.0, 1.0, 100),
+            Time(71, FRI, 14.0, 1.0, 102),
+            Time(72, FRI, 15.0, 1.0, 104),
+            Time(73, FRI, 16.0, 1.0, 106),
+            Time(74, FRI, 17.0, 1.0, 108)
         ]),
         Class(course_code="CS104", class_type="LAB", times=[
-            Time(40, FRI, 15.0, 1.0, 65),
-            Time(41, FRI, 16.0, 1.0, 70),
-            Time(42, FRI, 17.0, 1.0, 75),
-            Time(43, FRI, 18.0, 1.0, 80),
-            Time(44, FRI, 19.0, 1.0, 85)
+            Time(75, FRI, 8.0, 1.0, 65),
+            Time(76, FRI, 9.0, 1.0, 67),
+            Time(77, FRI, 10.0, 1.0, 69),
+            Time(78, FRI, 11.0, 1.0, 71),
+            Time(79, FRI, 12.0, 1.0, 73),
+            Time(80, FRI, 13.0, 1.0, 75),
+            Time(81, FRI, 14.0, 1.0, 77),
+            Time(82, FRI, 15.0, 1.0, 79),
+            Time(83, FRI, 16.0, 1.0, 81),
+            Time(84, FRI, 17.0, 1.0, 83)
         ])
     ]
     before = time.time()
@@ -238,7 +278,7 @@ def print_schedule(schedule: dict) -> None:
     """
     rows = []
     for i in range(48):
-        row = []
+        row = [str(i/2).center(6)]
         for day in DAYS:
             slot = schedule[day][i]
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
