@@ -79,20 +79,6 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
 
     return schedule_heap.getBestSchedules()
 
-
-def score_schedule(schedule: dict, time_slots: dict) -> int:
-    """
-    Calculate the score of a schedule based on the number of ideal time slots allocated.
-    """
-    score = 0
-
-    for day in schedule:
-        for slot in range(NUMBER_OF_TIME_SLOTS):
-            if schedule[day][slot]:
-                score += time_slots[day][slot]  # Add the score of the time slot to the total score
-    
-    return score
-
 def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
     """
     Remove all classes at times that the useer marked as unavailable.
