@@ -49,7 +49,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
         
-    return schedule_heap.getBestSchedule() # Return the best schedule from the heap
+    return schedule_heap.getBestSchedules() # Return the best schedule from the heap
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -92,7 +92,7 @@ def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]],
         i (int): The index of the class currently being considered.
     """
     if i == len(classes):
-        copy = {}
+        copy = {}  # Calculate the score of the current schedule
         for day in DAYS:
             copy[day] = schedule[day].copy()  # Copy the current schedule to output
         score = score_schedule(copy, time_slots)

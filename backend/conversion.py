@@ -32,7 +32,10 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
         # if existing class exists, add time to it
         foundClassInstance = False
         for classInstance in classes:
-            if classInstance.course_code == course["course_code"] and classInstance.class_type == course["class_type"]:
+            if (classInstance.course_code == course["course_code"] 
+                and classInstance.class_type == getClassType(course["class_type"])
+                and classInstance.subclass_type == course["class_type"]
+            ):
                 classInstance.add_time(time)
                 foundClassInstance = True
                 break

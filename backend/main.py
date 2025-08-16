@@ -93,7 +93,7 @@ def recommend_timetable():
     # Retrieve timeslot preferences, and convert them to algorithm format
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
-    print(timeslots)
+    print(courses_activities)
     best_timetables = solve_timetable(ALWAYS_AVAILABLE, courses_activities)
 
     # solve timetable
@@ -108,7 +108,7 @@ def recommend_timetable():
         timetable_recommendation_response["recommendations"].append({
             "id": "rec_{id}".format(id=index+1),
             "name": "Recommendation {no}".format(no=index+1),
-            "score": timetable["score"],
+            "score": 0,
             "conflicts": 0,
             "grid": convertTimetableToGrid(timetable)
         })

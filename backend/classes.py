@@ -77,6 +77,16 @@ class Class:
     
     def add_time(self, time: Time) -> None:
         self.times.append(time)
+    
+    def __eq__(self, other) -> bool:
+        """
+        Checks if two Class instances are equal based on their attributes.
+        """
+        return (
+            self.course_code == other.course_code and
+            self.class_type == other.class_type and
+            self.subclass_type == other.subclass_type
+        )
 
 
 class ComparableSchedule:
