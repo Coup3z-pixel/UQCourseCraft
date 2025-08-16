@@ -1,6 +1,7 @@
 """
 The file containing all helper classes for the algorithm file.
 """
+from constants import *
 
 class Time:
     def __init__(self, activity_number: int, day: str, start_time: float, duration: float, percent_booked: int) -> None:
