@@ -2,6 +2,8 @@ from classes import *
 from constants import *
 import time
 
+from heapq import heapify, heappush, heappop
+
 """
 In this file, we are implementing the timetabling algorithm for UQCourseCraft.
 
@@ -45,12 +47,24 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     if not valid_schedules:
         raise ValueError("No valid timetable found.")
 
+    score_heap = []
+    heapify(score_heap)
+
     for valid_schedule in valid_schedules:
         valid_schedule['score'] = score_schedule(valid_schedule, time_slots)
-    
-    valid_schedules.sort(key=lambda x: x['score'], reverse=True)  # Sort schedules by score
-    print(valid_schedules[0].pop('score'))  # Remove the score from the final output
-    return valid_schedules[0]  # Return the first valid schedule found
+
+        if len(score_heap) == 5:
+            heappop(score_heap)
+
+        heappush(score_heap, (valid_schedule['score'], id(valid_schedule), valid_schedule))
+
+    best_schedules = []
+
+    for _ in range(5):
+        schedule_tuple = heappop(score_heap)  
+        best_schedules.append(schedule_tuple[2])
+     
+    return best_schedules[0]  # Return the first valid schedule found
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -81,7 +95,7 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
         class_.times = working_times
 
 
-def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: list) -> None:
+def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: list) -> bool:
     """
     Recursively attempts to assign class times to the schedule using backtracking.
     Tries to find a valid arrangement of all classes without conflicts.
