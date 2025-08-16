@@ -43,6 +43,9 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     # Prune search space: order classes by number of available times (most constrained first)
     classes.sort(key=lambda c: len(c.times))
 
+    #for class_ in classes:
+    #    sort_times(class_.times, time_slots)
+
     # Initialize the schedule with empty strings for each time slot
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
     schedule_heap = ScheduleHeap(5)
@@ -101,6 +104,23 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
             if sum(time_slots[time.day][start_time:end_time]) > 0:
                 working_times.append(time)
         class_.times = working_times
+
+def sort_times(times: list[Time], time_slots) -> None:
+    """ Sort the times based on points they would add to the schedule in descending order. """
+    points_and_times = [
+        (points_added(time, time_slots), time) for time in times
+    ]
+    points_and_times.sort(reverse=True, key=lambda x: x[0])
+
+def points_added(time: Time, time_slots) -> int:
+    """ Calculate the points added by a time slot based on the current schedule and time slots. """
+    day = time.day
+    start_time = int(time.start_time) * 2  # Convert to half-hour increments
+    end_time = int((time.start_time + time.duration) * 2)
+    points = 0
+    for slot in range(start_time, end_time):
+        points += time_slots[day][slot]  # Add the score of the time slot to the total score
+    return points
 
 def allocate_class(schedule: dict,time_slots:dict[list[int]], class_: Class, time: Time) -> int:
     """"
