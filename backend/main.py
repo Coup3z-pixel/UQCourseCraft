@@ -5,6 +5,7 @@ from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from constants import *
+import time
 
 import requests
 
@@ -94,7 +95,9 @@ def recommend_timetable():
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
     print(courses_activities)
+    before = time.time()
     best_timetables = solve_timetable(timeslots, courses_activities)
+    after = time.time()
 
     # solve timetable
 
@@ -120,5 +123,5 @@ def recommend_timetable():
             "conflicts": 0,
             "grid": convertTimetableToGrid(process_timetable)
         })
-    
+    print(f"Time taken: {after - before:.2f} seconds")
     return timetable_recommendation_response

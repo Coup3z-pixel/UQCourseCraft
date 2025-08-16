@@ -39,17 +39,19 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
-    
+
+    # Prune search space: order classes by number of available times (most constrained first)
+    classes.sort(key=lambda c: len(c.times))
+
     # Initialize the schedule with empty strings for each time slot
-    # Each day has 48 half-hour slots (24 hours * 2)
-    schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
-    schedule_heap = ScheduleHeap(5)  # Min-heap to store the best schedules based on their scores
+    schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
+    schedule_heap = ScheduleHeap(5)
 
     backtrack(schedule, classes, time_slots, 0, schedule_heap)
     if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
-        
-    return schedule_heap.getBestSchedules() # Return the best schedule from the heap
+
+    return schedule_heap.getBestSchedules()
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
