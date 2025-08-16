@@ -61,6 +61,14 @@ class Class:
         self.times.append(time)
 
 
+class ComparableSchedule:
+    def __init__(self, score: int, schedule: dict):
+        self.score = score
+        self.schedule = schedule
+    def __lt__(self, other):
+            return self.score < other.score
+    
+
 class ScheduleHeap:
     def __init__(self, capacity: int) -> None:
         """
@@ -74,8 +82,9 @@ class ScheduleHeap:
         Add a new entry to the heap with a given score and schedule. If the heap is not full or the 
         new entry has a higher score than the smallest entry, it is added to the heap.
         """
-        if len(self.heap) < self.capacity or score > self.heap[0][0]:
-            heapq.heappush(self.heap, (score, schedule))
+        
+        if len(self.heap) < self.capacity or score > self.heap[0].score:
+            heapq.heappush(self.heap, ComparableSchedule(score, schedule))
 
             if len(self.heap) > self.capacity:
                 heapq.heappop(self.heap)
@@ -86,6 +95,6 @@ class ScheduleHeap:
         """
         output = []
         while self.heap:
-            score, schedule = heapq.heappop(self.heap)
+            schedule = heapq.heappop(self.heap).schedule
             output.append(schedule)
         return output[::-1]  # Return in descending order of score
