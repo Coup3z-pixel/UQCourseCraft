@@ -5,38 +5,37 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useRef } from "react"
-import { Toggle } from "./components/ui/toggle"
-import { Checkbox } from "./components/ui/checkbox"
 
 const timeSlots = [
-  "8:00",
-  "8:30",
-  "9:00",
-  "9:30",
+  "08:00",
+  "08:30",
+  "09:00",
+  "09:30",
   "10:00",
   "10:30",
   "11:00",
   "11:30",
   "12:00",
   "12:30",
-  "1:00",
-  "1:30",
-  "2:00",
-  "2:30",
-  "3:00",
-  "3:30",
-  "4:00",
-  "4:30",
-  "5:00",
-  "5:30",
-  "6:00",
-  "6:30",
-  "7:00",
-  "7:30",
-  "8:00",
-  "8:30",
-  "9:00",
-  "9:30"
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+  "21:00",
+  "21:30",
+  "22:00",
 ]
 const days = ["MON", "TUE", "WED", "THU", "FRI"]
 
@@ -87,8 +86,8 @@ export default function TimetablePage() {
   const [courses, setCourses] = useState<string[]>([])
   const [semester, setSemester] = useState("S1")
   const [location, setLocation] = useState("STLUC")
-  const [attendLectures, setAttendLectures] = useState(false)
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
+  const [attendLectures, setAttendLectures] = useState(true)
 
   const getCurrentGrid = () => {
     return activeTab === "preferences" ? preferencesGrid : recommendationsGrid
@@ -131,7 +130,7 @@ export default function TimetablePage() {
           location,
           courses,
           timetablePreferences: convertTimetableForAPI(),
-		  attendLectures
+          attendLectures,
         }),
       })
 
@@ -306,7 +305,7 @@ export default function TimetablePage() {
   const getCellStyling = (timeIndex: number, dayIndex: number) => {
     const currentGrid = getCurrentGrid()
     const cell = currentGrid[timeIndex][dayIndex]
-    const baseClasses = `p-2 h-8 border-l border-purple-600/30 transition-all duration-150 select-none relative ${
+    const baseClasses = `p-2 h-6 border-l border-purple-600/30 transition-all duration-150 select-none relative ${
       activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
     }`
 
@@ -314,31 +313,11 @@ export default function TimetablePage() {
       return `${baseClasses} bg-blue-600/70 hover:bg-blue-600/80`
     }
 
-	// `bg-green-400/60 bg-green-500/60 bg-green-600/60 bg-green-700/60 bg-green-800/60`
-	// css string for loading the css into tailwind file
+	// `bg-green-600/50 bg-green-500/50 bg-green-400/50`
     switch (cell.preference) {
       case "preferred":
-        let intensity = ""
-		let hoverIntensity = ""
-
-		switch(cell.rank) {
-			case 1:
-				intensity = "600"
-				hoverIntensity = "800"
-				break
-			case 2:
-				intensity = "500"
-				hoverIntensity = "700"
-				break
-			case 3:
-				intensity = "400"
-				hoverIntensity = "600"
-				break
-			default:
-				intensity = "300"
-		}
-		
-        return `${baseClasses} bg-green-${intensity}/60 ${activeTab === "preferences" ? `hover:bg-green-${hoverIntensity}/60` : ""}`
+        const intensity = cell.rank === 1 ? "600" : cell.rank === 2 ? "500" : "400"
+        return `${baseClasses} bg-green-${intensity}/50 ${activeTab === "preferences" ? `hover:bg-green-${intensity}/60` : ""}`
       case "unavailable":
         return `${baseClasses} bg-red-600/40 ${activeTab === "preferences" ? "hover:bg-red-600/50" : ""}`
       default:
@@ -466,21 +445,9 @@ export default function TimetablePage() {
                   HERSTON
                 </SelectItem>
               </SelectContent>
-            </Select>		
-<div className="flex items-center space-x-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="attend-lectures"
-                  checked={attendLectures}
-                  onChange={(e) => setAttendLectures(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 bg-purple-700/50 border-purple-400 rounded focus:ring-purple-500 focus:ring-2"
-                />
-                <label htmlFor="attend-lectures" className="text-white text-sm">
-                  I want to attend lectures
-                </label>
-              </div>
+            </Select>
           </div>
-		
+
           {activeTab === "preferences" && (
             <div className="space-y-3">
               <div className="text-white text-sm font-medium">Preference Rank:</div>
@@ -500,6 +467,18 @@ export default function TimetablePage() {
                     Rank {rank}
                   </Button>
                 ))}
+              </div>
+              <div className="flex items-center space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="attend-lectures"
+                  checked={attendLectures}
+                  onChange={(e) => setAttendLectures(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 bg-purple-700/50 border-purple-400 rounded focus:ring-purple-500 focus:ring-2"
+                />
+                <label htmlFor="attend-lectures" className="text-white text-sm">
+                  I want to attend lectures
+                </label>
               </div>
               <Button
                 onClick={clearAll}
@@ -599,7 +578,7 @@ export default function TimetablePage() {
             </div>
 
             {timeSlots.map((time, timeIndex) => (
-              <div key={time} className="grid grid-cols-6 border-t border-purple-600/30">
+              <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30">
                 <div className="p-2 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>

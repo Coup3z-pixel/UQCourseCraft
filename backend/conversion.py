@@ -92,8 +92,13 @@ def convertTimetableToGrid(timetable_dict):
     # Define the order of weekdays
     weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     
-    # Initialize 11x5 grid (11 time slots, 5 weekdays)
+    # Initialize 28x5 grid (11 time slots, 5 weekdays)
     grid = []
+
+    print(timetable_dict['Monday'])
+    print(len(timetable_dict['Monday']))
+
+    # bug: its the whole day
 
     for timeIndex, _ in enumerate(timetable_dict['Monday']):
         row = []
