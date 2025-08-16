@@ -2,6 +2,7 @@
 The file containing all helper classes for the algorithm file.
 """
 from constants import *
+import heapq
 
 class Time:
     def __init__(self, activity_code: str, day: str, start_time: float, duration: float, percent_booked: int) -> None:
@@ -58,3 +59,33 @@ class Class:
     
     def add_time(self, time: Time) -> None:
         self.times.append(time)
+
+
+class ScheduleHeap:
+    def __init__(self, capacity: int) -> None:
+        """
+        Initialize a min-heap with a given capacity.
+        """
+        self.capacity = capacity
+        self.heap = []
+    
+    def newEntry(self, score: int, schedule: dict) -> None:
+        """
+        Add a new entry to the heap with a given score and schedule. If the heap is not full or the 
+        new entry has a higher score than the smallest entry, it is added to the heap.
+        """
+        if len(self.heap) < self.capacity or score > self.heap[0][0]:
+            heapq.heappush(self.heap, (score, schedule))
+
+            if len(self.heap) > self.capacity:
+                heapq.heappop(self.heap)
+    
+    def getBestSchedules(self) -> list[dict]:
+        """
+        Get the best schedules from the heap, sorted by score in descending order.
+        """
+        output = []
+        while self.heap:
+            score, schedule = heapq.heappop(self.heap)
+            output.append(schedule)
+        return output[::-1]  # Return in descending order of score

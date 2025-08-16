@@ -40,6 +40,8 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
     
+    # Initialize the schedule with empty strings for each time slot
+    # Each day has 48 half-hour slots (24 hours * 2)
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
     valid_schedules = []
 
