@@ -55,6 +55,8 @@ def course(course_code):
         "location": request.args.get('location')
     })
 
+    print(course_timetable)
+
     return course_timetable
 
 
