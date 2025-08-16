@@ -10,3 +10,5 @@ THU = "Thursday"
 FRI = "Friday"
 SAT = "Saturday"
 SUN = "Sunday"
+
+DAYS = [MON, TUE, WED, THU, FRI, SAT, SUN]
