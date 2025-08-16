@@ -163,8 +163,5 @@ def print_schedule(schedule: dict) -> None:
             slot = schedule[day][i]
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
-<<<<<<< HEAD
     print("\n".join(rows[16:44]))
-=======
-    print("\n".join(rows[16:44]))
->>>>>>> a49698909efbc45a0450224e19ee4ba2fedd6910
+
