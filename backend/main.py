@@ -2,7 +2,7 @@ from algorithm import print_schedule, solve_timetable
 from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
 from conversion import convertTimetableToGrid
 from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
 from constants import *
 import time
@@ -72,7 +72,6 @@ def recommend_timetable():
 		timetablePreferences: convertTimetableForAPI()
     }
     '''
-
     body = request.get_json()
     courses_activities = []
     
