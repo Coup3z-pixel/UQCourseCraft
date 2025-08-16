@@ -100,6 +100,13 @@ def recommend_timetable():
     best_timetables = solve_timetable(_, courses_activities)
 
     # solve timetable
+
+    timetable_recommendation_response = {
+            "recommendations": []
+    }
+
+    for timetable in best_timetables:
+        pass
     
     return {
         "recommendations": [
