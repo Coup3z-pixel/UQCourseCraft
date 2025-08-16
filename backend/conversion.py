@@ -3,6 +3,19 @@ from main import *
 from constants import *
 
 def convertForAlgorithm(courses_activities: list) -> list[Class]:
+    """
+    Converts a list of course activity dictionaries into a list of Class objects for algorithmic processing.
+
+    Each activity dictionary should contain keys such as 'course_code', 'activity_code', 'day', 'start', 'duration', and 'class_type'.
+    The function groups activities by course and class type, creating Class instances and adding Time instances for each activity.
+
+    Args:
+        courses_activities (list): List of dictionaries representing course activities.
+
+    Returns:
+        list[Class]: List of Class objects, each containing associated Time objects.
+    """
+    
     classes = []
     time_slots = dict()
 
