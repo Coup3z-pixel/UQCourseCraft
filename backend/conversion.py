@@ -30,6 +30,8 @@ def convertForAlgorithm(courses_activities: list):
             classes.append(Class(
                 course["course_code"], 
                 course["class_type"]))
+
+    return classes
         
 
 def convertTime(time: str) -> float:
