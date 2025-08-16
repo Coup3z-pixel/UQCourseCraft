@@ -43,3 +43,6 @@ def convertMinToHours(duration: str) -> float:
 
 def getClassType(subclass_type: str) -> str:
     return subclass_type[0:len(subclass_type) - 1]
+
+def convertTimetableToGrid(timetable: dict):
+    pass

@@ -1,5 +1,6 @@
 from algorithm import solve_timetable
-from conversion import convertForAlgorithm
+from constants import DAYS, IDEAL, NUMBER_OF_TIME_SLOTS
+from conversion import convertForAlgorithm, convertTimetableToGrid
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -23,28 +24,16 @@ def course_details(course_code, options):
 
     timetable_response = requests.post(timetable_url, data=course_body)
     
-    print(timetable_response.json())
-
     return timetable_response.json()
 
 def parse_course_timetable(course_json, course_code):
     course_key = next(iter(course_json))
     course_information = course_json[course_key]
 
-    print(course_key) 
-
     course_activities = []
 
     # Iterate over the activities
-    for key, activity in course_information["activities"].items():
-        print("Key:", key)
-        print("Course type: ", key.split("|")[1])
-        print("Day:", activity["day_of_week"])
-        print("Start:", activity["start_time"])
-        print("Duration:", activity["duration"])
-        print("Availability:", activity["availability"])
-        print("---")
-
+    for key, activity in course_information["activities"].items(): 
         course_activities.append({
             "course_code": course_code,
             "class_type": key.split("|")[1],
@@ -89,61 +78,27 @@ def recommend_timetable():
             "location": body.get('location')
         })
 
-        print(course_timetable)
+        courses_activities.append(parse_course_timetable(course_timetable, course))
 
-        course_info = parse_course_timetable(course_timetable, course)
-        algo_course_compatible = convertForAlgorithm(course_info)
-        courses_activities.append(algo_course_compatible)
+    compatible_timetable = convertForAlgorithm(courses_activities)
+    best_timetables = solve_timetable({
+        day: [IDEAL] * NUMBER_OF_TIME_SLOTS for days in DAYS
+    }, compatible_timetable)
 
-    print(courses_activities)
-
-    best_timetables = solve_timetable(_, courses_activities)
-
-    # solve timetable
-
-    timetable_recommendation_response = {
-            "recommendations": []
+    recommendation_response = {
+        "recommendations": []
     }
 
-    for timetable in best_timetables:
-        pass
+    for index, timetable in enumerate(best_timetables):
+        recommendation_response["recommendations"].append({
+            "id": "rec_{id}".format(id=index),
+            "name": "Recommendation: {no}".format(no=index),
+            "score": timetable["score"],
+            "grid": convertTimetableToGrid(timetable)
+        })
     
     return {
         "recommendations": [
-    {
-      "id": "rec_001",
-      "name": "Best Overall",
-      "score": 95,
-      "conflicts": 0,
-      "grid": [
-        [
-          [],
-          [],
-          [
-            {
-              "course_code": "COMP3506 LEC 01",
-              "preferences": "preferred",
-              "rank": 1
-            }
-          ],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [
-            {
-              "course_code": "MATH2001",
-              "preferences": "preferred",
-              "rank": 2
-            }
-          ],
-          []
-        ]
-      ]
-    },
     {
       "id": "rec_001",
       "name": "Best Overall",
