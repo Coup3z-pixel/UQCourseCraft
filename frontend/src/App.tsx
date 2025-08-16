@@ -6,7 +6,29 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useRef } from "react"
 
-const timeSlots = ["8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6"]
+const timeSlots = [
+  "8:00",
+  "8:30",
+  "9:00",
+  "9:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "1:00",
+  "1:30",
+  "2:00",
+  "2:30",
+  "3:00",
+  "3:30",
+  "4:00",
+  "4:30",
+  "5:00",
+  "5:30",
+  "6:00",
+]
 const days = ["MON", "TUE", "WED", "THU", "FRI"]
 
 type CellState = {
@@ -19,6 +41,14 @@ type APIResponse = {
   course_code: string
   preferences?: string
   rank?: number
+}
+
+type RecommendationOption = {
+  id: string
+  name: string
+  score: number
+  conflicts: number
+  grid: CellState[][]
 }
 
 const defaultCellState: CellState = {
@@ -34,6 +64,9 @@ export default function TimetablePage() {
   const [activeTab, setActiveTab] = useState<"preferences" | "recommendations">("preferences")
   const [preferencesGrid, setPreferencesGrid] = useState<CellState[][]>(initializeTimetable())
   const [recommendationsGrid, setRecommendationsGrid] = useState<CellState[][]>(initializeTimetable())
+
+  const [recommendationOptions, setRecommendationOptions] = useState<RecommendationOption[]>([])
+  const [selectedRecommendation, setSelectedRecommendation] = useState<string | null>(null)
 
   const [isDragging, setIsDragging] = useState(false)
   const [dragType, setDragType] = useState<"preferred" | "unavailable" | null>(null)
@@ -93,7 +126,7 @@ export default function TimetablePage() {
 
       if (response.ok) {
         const data = await response.json()
-        handleGridResponse(data)
+        handleMultipleRecommendations(data)
         setActiveTab("recommendations")
       }
     } catch (error) {
@@ -101,6 +134,60 @@ export default function TimetablePage() {
     } finally {
       setIsLoadingRecommendations(false)
     }
+  }
+
+  const handleMultipleRecommendations = (apiData: any) => {
+    // Handle both single recommendation and multiple recommendations
+    if (Array.isArray(apiData.recommendations)) {
+      // Multiple recommendations format
+      const options: RecommendationOption[] = apiData.recommendations.map((rec: any, index: number) => ({
+        id: rec.id || `rec_${index}`,
+        name: rec.name || `Option ${index + 1}`,
+        score: rec.score || 0,
+        conflicts: rec.conflicts || 0,
+        grid: convertAPIResponseToGrid(rec.grid || rec.schedule || []),
+      }))
+
+      setRecommendationOptions(options)
+      if (options.length > 0) {
+        setSelectedRecommendation(options[0].id)
+        setRecommendationsGrid(options[0].grid)
+      }
+    } else {
+      // Single recommendation format (backward compatibility)
+      const singleOption: RecommendationOption = {
+        id: "single_rec",
+        name: "Recommended Timetable",
+        score: 95,
+        conflicts: 0,
+        grid: convertAPIResponseToGrid(apiData),
+      }
+
+      setRecommendationOptions([singleOption])
+      setSelectedRecommendation("single_rec")
+      setRecommendationsGrid(singleOption.grid)
+    }
+  }
+
+  const convertAPIResponseToGrid = (gridData: APIResponse[][][]): CellState[][] => {
+    const newGrid = initializeTimetable()
+
+    gridData.forEach((timeRow, timeIndex) => {
+      timeRow.forEach((dayCell, dayIndex) => {
+        if (Array.isArray(dayCell) && dayCell.length > 0) {
+          const courseData = dayCell[0]
+          if (courseData?.course_code) {
+            newGrid[timeIndex][dayIndex] = {
+              preference: (courseData.preferences as "preferred" | "unavailable") || "preferred",
+              rank: courseData.rank || 1,
+              course_code: courseData.course_code,
+            }
+          }
+        }
+      })
+    })
+
+    return newGrid
   }
 
   const handleGridResponse = (gridData: APIResponse[][][]) => {
@@ -124,6 +211,14 @@ export default function TimetablePage() {
 
       return newGrid
     })
+  }
+
+  const selectRecommendation = (recommendationId: string) => {
+    const selected = recommendationOptions.find((opt) => opt.id === recommendationId)
+    if (selected) {
+      setSelectedRecommendation(recommendationId)
+      setRecommendationsGrid(selected.grid)
+    }
   }
 
   const updateCell = (timeIndex: number, dayIndex: number, isRightClick: boolean) => {
@@ -200,7 +295,7 @@ export default function TimetablePage() {
   const getCellStyling = (timeIndex: number, dayIndex: number) => {
     const currentGrid = getCurrentGrid()
     const cell = currentGrid[timeIndex][dayIndex]
-    const baseClasses = `p-4 h-16 border-l border-purple-600/30 transition-all duration-150 select-none relative ${
+    const baseClasses = `p-2 h-8 border-l border-purple-600/30 transition-all duration-150 select-none relative ${
       activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
     }`
 
@@ -225,7 +320,7 @@ export default function TimetablePage() {
     setCourseCode("")
   }
 
-  const clearPreferences = () => {
+  const clearAll = () => {
     setPreferencesGrid(initializeTimetable())
   }
 
@@ -293,161 +388,158 @@ export default function TimetablePage() {
         </div>
 
         {activeTab === "preferences" && (
-          <div className="mb-4 space-y-3">
-            <div className="p-3 bg-purple-700/30 rounded-lg">
-              <p className="text-purple-100 text-sm">
-                <strong>Drag</strong> to select multiple time slots • <strong>Left-click</strong> for preferred times
-                (green) • <strong>Right-click</strong> for unavailable times (red) • <strong>Click repeatedly</strong>{" "}
-                to cycle through preference ranks
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4 p-3 bg-purple-700/20 rounded-lg">
-              <span className="text-purple-100 text-sm font-medium">Preference Rank:</span>
-              <div className="flex gap-2">
-                {[1, 2, 3].map((rank) => (
-                  <Button
-                    key={rank}
-                    size="sm"
-                    variant={currentRank === rank ? "default" : "outline"}
-                    onClick={() => setCurrentRank(rank)}
-                    className={`text-xs ${currentRank === rank ? "bg-green-600 hover:bg-green-700" : "bg-purple-600/30 hover:bg-purple-600/50"}`}
-                  >
-                    Rank {rank} {"★".repeat(rank)}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={clearPreferences}
-                className="ml-auto bg-red-600/30 hover:bg-red-600/50 text-red-100"
-              >
-                Clear All
-              </Button>
-            </div>
+          <div className="mb-4 text-purple-200 text-sm">
+            <strong>My Preferences</strong> - Left-click and drag to mark preferred times. Right-click and drag to mark
+            unavailable times.
           </div>
         )}
 
         {activeTab === "recommendations" && (
-          <div className="mb-4">
-            <div className="p-3 bg-purple-700/30 rounded-lg">
-              <p className="text-purple-100 text-sm">
-                <strong>Recommended Timetable</strong> - Generated based on your course selections and preferences.
-                Switch to "My Preferences" tab to modify your time preferences.
-              </p>
-            </div>
+          <div className="mb-4 text-purple-200 text-sm">
+            <strong>Recommended Timetable</strong> - Generated based on your course selections and preferences. Switch
+            to "My Preferences" tab to modify your time preferences.
           </div>
         )}
       </header>
 
       <div className="px-6 flex gap-6">
-		{activeTab === "preferences" ?
         <div className="w-80 space-y-4">
           <div className="space-y-3">
-            <Select defaultValue="S1" onValueChange={setSemester}>
-              <SelectTrigger className="bg-purple-700/30 border-purple-600 text-white">
-                <SelectValue />
+            <Select value={semester} onValueChange={setSemester}>
+              <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+                <SelectValue placeholder="Select semester" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="S1">SEMESTER 1 2025</SelectItem>
-                <SelectItem value="S2">SEMESTER 2 2025</SelectItem>
+              <SelectContent className="bg-purple-800 border-purple-600">
+                <SelectItem value="S1" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                  SEMESTER 1 2025
+                </SelectItem>
+                <SelectItem value="S2" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                  SEMESTER 2 2025
+                </SelectItem>
               </SelectContent>
             </Select>
 
-            <Select defaultValue="STLUC" onValueChange={setLocation}>
-              <SelectTrigger className="bg-purple-700/30 border-purple-600 text-white">
-                <SelectValue />
+            <Select value={location} onValueChange={setLocation}>
+              <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+                <SelectValue placeholder="Select location" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="STLUC">ST LUCIA</SelectItem>
-                <SelectItem value="GATTN">GATTON</SelectItem>
+              <SelectContent className="bg-purple-800 border-purple-600">
+                <SelectItem value="STLUC" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                  ST LUCIA
+                </SelectItem>
+                <SelectItem value="GATTN" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                  GATTON
+                </SelectItem>
+                <SelectItem value="HERST" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                  HERSTON
+                </SelectItem>
               </SelectContent>
             </Select>
 
-            <Select defaultValue="internal">
-              <SelectTrigger className="bg-purple-700/30 border-purple-600 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="internal">INTERNAL</SelectItem>
-                <SelectItem value="external">EXTERNAL</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="bg-purple-700/50 rounded px-3 py-2 text-white text-sm font-medium">INTERNAL ▼</div>
           </div>
 
-          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-2 text-center flex flex-col gap-4">
-            {courses.length == 0 ? (
-              <>
-                <div className="text-purple-200 text-sm font-medium p-2">
-                  SEARCH TO ADD
+          {activeTab === "preferences" && (
+            <div className="space-y-3">
+              <div className="text-white text-sm font-medium">Preference Rank:</div>
+              <div className="flex gap-2">
+                {[1, 2, 3].map((rank) => (
+                  <Button
+                    key={rank}
+                    variant={currentRank === rank ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentRank(rank)}
+                    className={`${
+                      currentRank === rank
+                        ? "bg-green-600 text-white"
+                        : "border-green-400 text-green-400 hover:bg-green-600/20"
+                    }`}
+                  >
+                    Rank {rank}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                onClick={clearAll}
+                variant="outline"
+                size="sm"
+                className="w-full border-red-400 text-red-400 hover:bg-red-600/20 bg-transparent"
+              >
+                Clear All
+              </Button>
+            </div>
+          )}
+
+          {activeTab === "recommendations" && recommendationOptions.length > 0 && (
+            <div className="space-y-3">
+              <div className="text-white text-sm font-medium">Recommendation Options:</div>
+              <Select value={selectedRecommendation || ""} onValueChange={selectRecommendation}>
+                <SelectTrigger className="w-full bg-purple-700/50 border-purple-400 text-white">
+                  <SelectValue placeholder="Select a recommendation" />
+                </SelectTrigger>
+                <SelectContent className="bg-purple-800 border-purple-600">
+                  {recommendationOptions.map((option) => (
+                    <SelectItem
+                      key={option.id}
+                      value={option.id}
+                      className="text-white hover:bg-purple-700 focus:bg-purple-700"
+                    >
+                      <div className="flex flex-col">
+                        <div className="font-medium">{option.name}</div>
+                        <div className="text-xs opacity-80">
+                          Score: {option.score} | Conflicts: {option.conflicts}
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {activeTab === "recommendations" && recommendationOptions.length === 0 && (
+            <div className="space-y-3">
+              <div className="text-white text-sm font-medium">Recommendation Options:</div>
+              <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-4 text-center">
+                <div className="text-purple-200 text-sm">
+                  No recommendations loaded yet.
                   <br />
-                  COURSES
+                  Add courses and click "Get Recommendations" to see options.
                 </div>
-              </>
+              </div>
+            </div>
+          )}
+
+          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-8 text-center min-h-[200px] flex flex-col items-center justify-center">
+            {courses.length === 0 ? (
+              <div className="text-purple-200 text-sm font-medium">
+                SEARCH TO ADD
+                <br />
+                COURSES
+              </div>
             ) : (
-              <div>
+              <div className="w-full space-y-3">
                 {courses.map((course, index) => (
                   <div
                     key={index}
-                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-16 mb-4 flex items-center justify-center"
+                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center"
                   >
-                    <h1 className="text-sm text-purple-200 font-medium">{course}</h1>
+                    <span className="text-sm text-purple-200 font-medium">{course}</span>
                   </div>
                 ))}
                 <Button
                   onClick={recommendTimetable}
                   disabled={isLoadingRecommendations}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-purple-600 hover:bg-purple-500 text-white mt-4"
                 >
-                  {isLoadingRecommendations ? "Loading..." : "Get Best Timetable"}
+                  {isLoadingRecommendations ? "Loading..." : "Get Recommendations"}
                 </Button>
               </div>
             )}
           </div>
+        </div>
 
-          <Button
-            onClick={addCourse}
-            className="w-full bg-purple-600 hover:bg-purple-500 text-white"
-            disabled={!courseCode.trim()}
-          >
-            Add Course
-          </Button>
-        </div> : 
-		<div className="w-80 space-y-4">
-			<div className="border-2 border-dashed border-purple-400/50 rounded-lg p-2 text-center flex flex-col gap-4">
-            {courses.length == 0 ? (
-              <>
-                <div className="text-purple-200 text-sm font-medium p-2">
-                  SEARCH TO ADD
-                  <br />
-                  COURSES
-                </div>
-              </>
-            ) : (
-              <div>
-                {courses.map((course, index) => (
-                  <div
-                    key={index}
-                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-16 mb-4 flex items-center justify-center"
-                  >
-                    <h1 className="text-sm text-purple-200 font-medium">{course}</h1>
-                  </div>
-                ))}
-                <Button
-                  onClick={recommendTimetable}
-                  disabled={isLoadingRecommendations}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {isLoadingRecommendations ? "Loading..." : "Get Best Timetable"}
-                </Button>
-              </div>
-            )}
-          </div>
-
-		</div> 
-		}
-
+        {/* Existing timetable grid code */}
         <div className="flex-1">
           <div
             className="bg-purple-800/30 rounded-lg overflow-hidden select-none"
@@ -466,7 +558,7 @@ export default function TimetablePage() {
 
             {timeSlots.map((time, timeIndex) => (
               <div key={time} className="grid grid-cols-6 border-t border-purple-600/30">
-                <div className="p-4 text-white font-medium text-sm bg-purple-700/20 flex items-center justify-center">
+                <div className="p-2 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
                 {days.map((day, dayIndex) => {
@@ -483,23 +575,18 @@ export default function TimetablePage() {
                       style={{
                         backgroundImage:
                           cell.preference === "default" && !cell.course_code
-                            ? `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(147, 51, 234, 0.1) 2px, rgba(147, 51, 234, 0.1) 4px)`
+                            ? `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(147, 51, 234, 0.15) 2px, rgba(147, 51, 234, 0.15) 4px)`
                             : undefined,
                       }}
                     >
                       {cell.course_code && (
-                        <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm pointer-events-none">
+                        <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs pointer-events-none">
                           {cell.course_code}
                         </div>
                       )}
                       {cell.preference === "unavailable" && !cell.course_code && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-red-200 text-xl font-bold">×</div>
-                        </div>
-                      )}
-                      {cell.preference === "preferred" && !cell.course_code && (
-                        <div className="absolute top-1 right-1">
-                          <div className="text-green-200 text-xs font-bold">{cell.rank}</div>
+                          <div className="text-red-200 text-lg font-bold">×</div>
                         </div>
                       )}
                     </div>
