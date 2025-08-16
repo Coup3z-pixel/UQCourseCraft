@@ -160,7 +160,7 @@ def test_solve_timetable_sample():
     #result = solve_timetable(time_slots, sample_classes)
     after = time.time()
     print(f"Time taken: {after - before:.2f} seconds")
-    print_schedule(result)
+    #print_schedule(result)
 
 
 def print_schedule(schedule: dict) -> None:
