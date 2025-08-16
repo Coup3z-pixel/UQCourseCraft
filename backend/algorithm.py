@@ -43,30 +43,13 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     # Initialize the schedule with empty strings for each time slot
     # Each day has 48 half-hour slots (24 hours * 2)
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
-    valid_schedules = []
+    schedule_heap = ScheduleHeap(5)  # Min-heap to store the best schedules based on their scores
 
-    backtrack(schedule, classes, 0, valid_schedules)
-    if not valid_schedules:
+    backtrack(schedule, classes, time_slots, 0, schedule_heap)
+    if not schedule_heap:
         raise ValueError("No valid timetable found.")
 
-    score_heap = []
-    heapify(score_heap)
-
-    for valid_schedule in valid_schedules:
-        valid_schedule['score'] = score_schedule(valid_schedule, time_slots)
-
-        if len(score_heap) == 5:
-            heappop(score_heap)
-
-        heappush(score_heap, (valid_schedule['score'], id(valid_schedule), valid_schedule))
-
-    best_schedules = []
-
-    for _ in range(5):
-        schedule_tuple = heappop(score_heap)  
-        best_schedules.append(schedule_tuple[2])
-     
-    return best_schedules
+    return schedule_heap.getBestSchedules()[0]  # Return the best schedule from the heap
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -97,7 +80,7 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
         class_.times = working_times
 
 
-def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: list) -> bool:
+def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]], i: int, schedule_heap: ScheduleHeap) -> bool:
     """
     Recursively attempts to assign class times to the schedule using backtracking.
     Tries to find a valid arrangement of all classes without conflicts.
@@ -109,9 +92,11 @@ def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: lis
         i (int): The index of the class currently being considered.
     """
     if i == len(classes):
-        valid_schedules.append({})
+        copy = {}
         for day in DAYS:
-            valid_schedules[-1][day] = schedule[day].copy()  # Copy the current schedule to output
+            copy[day] = schedule[day].copy()  # Copy the current schedule to output
+        score = score_schedule(copy, time_slots)
+        schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
         return True
     
     class_ = classes[i]
@@ -166,4 +151,3 @@ def print_schedule(schedule: dict) -> None:
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
     print("\n".join(rows[16:44]))
-
