@@ -106,7 +106,7 @@ def recommend_timetable():
     }
 
     for timetable in best_timetables:
-        timetable_recommendation_response["recommendations"].append(time)
+        pass
     
     return {
         "recommendations": [
