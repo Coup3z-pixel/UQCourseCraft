@@ -118,7 +118,7 @@ def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
     
     for slot in range(start_time, end_time):
         if schedule[day][slot] != "":
-            pass
+            return False
         
     # If all slots are available, allocate the class
     for slot in range(start_time, end_time):
