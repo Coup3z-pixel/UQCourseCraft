@@ -38,7 +38,7 @@ ALWAYS_AVAILABLE = {
     day: [IDEAL] * NUMBER_OF_TIME_SLOTS for day in DAYS
 }
 
-RETURN_FIRST_MATCH = False
+RETURN_FIRST_MATCH = True
 
 JSON_TO_PREFERENCE = {
     "preferred": IDEAL,

@@ -35,7 +35,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     """
     # Check if there are any classes that cannot be allocated
     trim_classes(time_slots, classes)
-    invalid_classes = [class_.course_code + class_.class_type for class_ in classes if not class_.times]
+    invalid_classes = [class_.course_code + class_.subclass_type for class_ in classes if not class_.times]
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
