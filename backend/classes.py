@@ -22,7 +22,7 @@ class Time:
         self.percent_booked = percent_booked
     
     def __repr__(self) -> str:
-        return f"""Time(activity_number={self.activity_number}, 
+        return f"""Time(activity_number={self.activity_code}, 
             day={self.day}, 
             start_time={self.start_time}, 
             duration={self.duration}, 

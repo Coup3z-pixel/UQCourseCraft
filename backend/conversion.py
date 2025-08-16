@@ -11,10 +11,10 @@ def convertForAlgorithm(courses_activities: list) -> list[Class]:
         # Create time class
         time = Time(
             convertActivityNumber(course["activity_code"]),
-            course["day"].upper(),
+            JSON_TO_DAY.get(course["day"]),
             convertTime(course["start"]),
             convertMinToHours(course["duration"]),
-            50)
+            0)
         
         # if existing class exists, add time to it
         foundClassInstance = False
