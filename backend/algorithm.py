@@ -47,7 +47,36 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
     schedule_heap = ScheduleHeap(5)
 
-    backtrack(schedule, classes, time_slots, 0, schedule_heap)
+    def backtrack(i: int) -> bool:
+        """
+        Recursively attempts to assign class times to the schedule using backtracking.
+        Tries to find a valid arrangement of all classes without conflicts.
+        If a valid arrangement is found, it is added to the valid_schedules list.
+
+        Args:
+            schedule (dict): The current timetable, mapping days to lists of time slots.
+            classes (list[Class]): List of Class objects to be scheduled.
+            i (int): The index of the class currently being considered.
+        """
+        if i == len(classes):
+            copy = {}  # Calculate the score of the current schedule
+            for day in DAYS:
+                copy[day] = schedule[day].copy()  # Copy the current schedule to output
+            score = score_schedule(copy, time_slots)
+            schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
+            return True
+        
+        class_ = classes[i]
+        for time in class_.times:
+            if allocate_class(schedule, class_, time):
+                if backtrack(i+1) and RETURN_FIRST_MATCH:
+                    return True
+                deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
+
+        return False
+
+
+    backtrack(0)
     if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
 
@@ -80,35 +109,6 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
             if sum(time_slots[time.day][start_time:end_time]) > 0:
                 working_times.append(time)
         class_.times = working_times
-
-
-def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]], i: int, schedule_heap: ScheduleHeap) -> bool:
-    """
-    Recursively attempts to assign class times to the schedule using backtracking.
-    Tries to find a valid arrangement of all classes without conflicts.
-    If a valid arrangement is found, it is added to the valid_schedules list.
-
-    Args:
-        schedule (dict): The current timetable, mapping days to lists of time slots.
-        classes (list[Class]): List of Class objects to be scheduled.
-        i (int): The index of the class currently being considered.
-    """
-    if i == len(classes):
-        copy = {}  # Calculate the score of the current schedule
-        for day in DAYS:
-            copy[day] = schedule[day].copy()  # Copy the current schedule to output
-        score = score_schedule(copy, time_slots)
-        schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
-        return True
-    
-    class_ = classes[i]
-    for time in class_.times:
-        if allocate_class(schedule, class_, time):
-            if backtrack(schedule, classes, time_slots, i + 1, schedule_heap) and RETURN_FIRST_MATCH:
-                return True
-            deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
-
-    return False
 
 def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
     """"
