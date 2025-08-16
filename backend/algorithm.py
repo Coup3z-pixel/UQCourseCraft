@@ -47,7 +47,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
     schedule_heap = ScheduleHeap(5)
 
-    def backtrack(i: int, score: int) -> bool:
+    def backtrack(i: int, score: int, hours_remaining: int) -> bool:
         """
         Recursively attempts to assign class times to the schedule using backtracking.
         Tries to find a valid arrangement of all classes without conflicts.
@@ -58,26 +58,35 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
         """
         if i == len(classes):
             copy = {}  # Calculate the score of the current schedule
+            copy['score'] = score
             for day in DAYS:
                 copy[day] = schedule[day].copy()  # Copy the current schedule to output
             schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
             return True
         
+        # IF the current schedule cannot make it onto the top 5 schedules, return False
+        if len(schedule_heap.heap) == schedule_heap.capacity and score + (hours_remaining) * 2 * IDEAL < schedule_heap.heap[0].score:
+            return False
+        
         class_ = classes[i]
         for time in class_.times:
             score_added = allocate_class(schedule, time_slots, class_, time)
             if score_added:
-                if backtrack(i+1, score+score_added) and RETURN_FIRST_MATCH:
+                if backtrack(i+1, score+score_added, hours_remaining-time.duration) and RETURN_FIRST_MATCH:
                     return True
                 deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
 
         return False
 
-    backtrack(0, 0)
+    backtrack(0, 0, total_time(classes))
     if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
-
+    print(total_time(classes))
     return schedule_heap.getBestSchedules()
+
+def total_time(classes: list[Class]) -> int:
+    """Calculate the total time required for all classes."""
+    return sum([class_.times[0].duration for class_ in classes])
 
 def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
     """

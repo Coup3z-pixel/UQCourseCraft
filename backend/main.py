@@ -110,7 +110,7 @@ def recommend_timetable():
         timetable_recommendation_response["recommendations"].append({
             "id": "rec_{id}".format(id=index+1),
             "name": "Recommendation {no}".format(no=index+1),
-            "score": 0,
+            "score": timetable["score"],
             "conflicts": 0,
             "grid": convertTimetableToGrid(process_timetable)
         })
