@@ -4,7 +4,7 @@ The file containing all helper classes for the algorithm file.
 from constants import *
 
 class Time:
-    def __init__(self, activity_number: int, day: str, start_time: float, duration: float, percent_booked: int) -> None:
+    def __init__(self, activity_code: str, day: str, start_time: float, duration: float, percent_booked: int) -> None:
         """
         Initialize a class with the activity number, day, start time, duration, and percentage booked.
         
@@ -15,7 +15,7 @@ class Time:
             duration (int): The duration of the class in hours.
             percent_booked (int): The percentage of people that booked into the class compared to its capacity.
         """
-        self.activity_number = activity_number
+        self.activity_code = activity_code
         self.day = day
         self.start_time = start_time
         self.duration = duration
