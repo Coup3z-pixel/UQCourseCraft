@@ -415,6 +415,35 @@ export default function TimetablePage() {
           </Button>
         </div> : 
 		<div className="w-80 space-y-4">
+			<div className="border-2 border-dashed border-purple-400/50 rounded-lg p-2 text-center flex flex-col gap-4">
+            {courses.length == 0 ? (
+              <>
+                <div className="text-purple-200 text-sm font-medium p-2">
+                  SEARCH TO ADD
+                  <br />
+                  COURSES
+                </div>
+              </>
+            ) : (
+              <div>
+                {courses.map((course, index) => (
+                  <div
+                    key={index}
+                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-16 mb-4 flex items-center justify-center"
+                  >
+                    <h1 className="text-sm text-purple-200 font-medium">{course}</h1>
+                  </div>
+                ))}
+                <Button
+                  onClick={recommendTimetable}
+                  disabled={isLoadingRecommendations}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isLoadingRecommendations ? "Loading..." : "Get Best Timetable"}
+                </Button>
+              </div>
+            )}
+          </div>
 
 		</div> 
 		}

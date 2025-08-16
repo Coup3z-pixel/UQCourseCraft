@@ -1,7 +1,7 @@
 # Flask
 flask/.idea/
 flask/.vscode/
-flask/__pycache__/
+**/__pycache__/
 flask/dist/
 flask/.coverage*
 flask/htmlcov/
