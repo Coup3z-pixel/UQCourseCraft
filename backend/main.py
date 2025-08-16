@@ -56,7 +56,6 @@ def course(course_code):
         "location": request.args.get('location')
     })
 
-    print(course_timetable)
     if course_timetable == {}:
         pass
 
@@ -75,8 +74,6 @@ def recommend_timetable():
     '''
 
     body = request.get_json()
-    print(body)
-
     courses_activities = []
     
     for course in body.get('courses'):
@@ -85,8 +82,6 @@ def recommend_timetable():
             "location": body.get('location')
         })
 
-        print(course_timetable)
-
         course_info = parse_course_timetable(course_timetable, course)
         algo_course_compatible = convertForAlgorithmCourses(course_info)
         courses_activities += algo_course_compatible
@@ -94,8 +89,11 @@ def recommend_timetable():
     # Retrieve timeslot preferences, and convert them to algorithm format
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
+<<<<<<< HEAD
     print(courses_activities)
     before = time.time()
+=======
+>>>>>>> main
     best_timetables = solve_timetable(timeslots, courses_activities)
     after = time.time()
 
@@ -106,8 +104,6 @@ def recommend_timetable():
     }
 
     for index, timetable in enumerate(best_timetables):
-        print_schedule(timetable)
-
         process_timetable = {
                 "Monday": timetable["Monday"][16:44],
                 "Tuesday": timetable["Tuesday"][16:44],
@@ -123,5 +119,10 @@ def recommend_timetable():
             "conflicts": 0,
             "grid": convertTimetableToGrid(process_timetable)
         })
+<<<<<<< HEAD
     print(f"Time taken: {after - before:.2f} seconds")
     return timetable_recommendation_response
+=======
+    
+    return timetable_recommendation_response
+>>>>>>> main
