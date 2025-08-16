@@ -107,9 +107,14 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
                 working_times.append(time)
         class_.times = working_times
 
-def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
+def allocate_class(schedule: dict, class_: Class, time: Time) -> int:
     """"
-    Attempt to allocate a class to the schedule. Returns True if successful, False otherwise.
+    Attempt to allocate a class to the schedule. Returns the increase in score if successful, otherwise returns 0.
+
+    Args:
+        schedule (dict): The current schedule to which the class is being allocated.
+        class_ (Class): The class to be allocated.
+        time (Time): The time slot for the class.
     """
     day = time.day
     start_time = int(time.start_time) * 2  # Convert to half-hour increments
@@ -121,7 +126,7 @@ def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
         
     # If all slots are available, allocate the class
     for slot in range(start_time, end_time):
-        schedule[day][slot] = f"{class_.course_code} {class_.class_type}"
+        schedule[day][slot] = f"{class_.course_code} {class_.subclass_type} {time.activity_code}"
         
     return True  # Successfully allocated the class
 

@@ -89,7 +89,6 @@ def recommend_timetable():
     # Retrieve timeslot preferences, and convert them to algorithm format
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
-    print(courses_activities)
     before = time.time()
     best_timetables = solve_timetable(timeslots, courses_activities)
     after = time.time()

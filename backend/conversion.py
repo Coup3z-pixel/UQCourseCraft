@@ -20,7 +20,6 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
 
     # Creates the Class instances, with the Time instances inside
     for course in courses_activities:
-        print(course["activity_code"])
         # Create time class
         time = Time(
             convertActivityNumber(course["activity_code"]),
@@ -94,9 +93,6 @@ def convertTimetableToGrid(timetable_dict):
     
     # Initialize 28x5 grid (11 time slots, 5 weekdays)
     grid = []
-
-    print(timetable_dict['Monday'])
-    print(len(timetable_dict['Monday']))
 
     # bug: its the whole day
 
