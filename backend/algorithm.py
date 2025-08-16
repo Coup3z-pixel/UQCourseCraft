@@ -30,16 +30,15 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
 
     invalid_classes = [class_.course_code + class_.class_type for class_ in classes if not class_.times]
     if invalid_classes:
-        raise ValueError(f"Cannot allocate: {', '.join(invalid_classes)}")
+        message = f"Cannot allocate: {', '.join(invalid_classes)}"
+        raise ValueError(message)
     
     schedule = {}
     for day in DAYS:
         schedule[day] = [""] * 48  # Initialize each day with 48 half-hour slots (24 hours)
         # Each slot will be marked with course code and class type if allocated, or empty string if not allocated.
-    output = {}
-
+    output = {day: [''] * 48 for day in DAYS}  # Initialize output with empty lists for each day
     backtrack(schedule, classes, 0, output)
-
     return output
 
 
@@ -69,36 +68,82 @@ def backtrack(schedule: dict, classes: list[Class], i: int, output: dict) -> Non
         i (int): The index of the class currently being considered.
     """
     if i == len(classes):
-        output = schedule.copy()
+        for day in DAYS:
+            output[day] = schedule[day].copy()  # Copy the current schedule to output
+        return
     
-    if allocate_class(schedule, classes[i]):
-        backtrack(schedule, classes, i + 1)
-    else:
-        return  # If we cannot allocate the class, we stop the recursion here.
+    class_ = classes[i]
+    for time in class_.times:
+        if allocate_class(schedule, class_, time):
+            backtrack(schedule, classes, i + 1, output)
+            deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
+        
 
-def allocate_class(schedule: dict, class_: Class) -> bool:
+def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
     """"
     Attempt to allocate a class to the schedule. Returns True if successful, False otherwise.
     """
-    for time in class_.times:
-        day = time.day
-        start_time = int(time.start_time) * 2  # Convert to half-hour increments
-        end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
-        unavailable = False
+    day = time.day
+    start_time = int(time.start_time) * 2  # Convert to half-hour increments
+    end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+    unavailable = False
     
-        for slot in range(start_time, end_time):
-            if schedule[day][slot] != "":
-                unavailable = True
-                break
+    for slot in range(start_time, end_time):
+        if schedule[day][slot] != "":
+            return False
         
-        if unavailable:
-            continue  # Skip this time if any slot is already occupied
-
-        # If all slots are available, allocate the class
-        for slot in range(start_time, end_time):
-            schedule[day][slot] = f"{class_.course_code} {class_.class_type}"
+    # If all slots are available, allocate the class
+    for slot in range(start_time, end_time):
+        schedule[day][slot] = f"{class_.course_code} {class_.class_type}"
         
-        return True  # Successfully allocated the class
-    return False
+    return True  # Successfully allocated the class
 
 
+def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
+    """    Deallocate a class from the schedule.
+    """
+    day = time.day
+    start_time = int(time.start_time) * 2
+    end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+
+    for slot in range(start_time, end_time):
+        schedule[day][slot] = ""  # Remove the class from the schedule
+
+
+#space to run sketches
+def test_solve_timetable_sample():
+    # Sample time slots: all slots are ideal (3) for Monday and Tuesday, unavailable (0) for other days
+    time_slots = {
+        MON: [3] * 48,
+        TUE: [3] * 48,
+        WED: [3] * 48,
+        THU: [3] * 48,
+        FRI: [3] * 48
+    }
+
+    sample_classes = [
+        Class(course_code="MATH101", class_type="LEC", times=[Time(1, MON, 9.0, 1.0, 50)]),
+        Class(course_code="PHYS102", class_type="TUT", times=[Time(2, TUE, 11.0, 1.5, 30)]),
+        Class(course_code="CHEM103", class_type="LEC", times=[Time(3, THU, 14.0, 3.0, 70), Time(3, FRI, 10.0, 2.0, 60)]),
+        Class(course_code="CS104", class_type="LAB", times=[Time(4, THU, 16.0, 1.0, 90)])
+    ]
+
+    result = solve_timetable(time_slots, sample_classes)
+    print_schedule(result)
+
+
+def print_schedule(schedule: dict) -> None:
+    """
+    Print the schedule in a readable format.
+    """
+    rows = []
+    for i in range(48):
+        row = []
+        for day in DAYS:
+            slot = schedule[day][i]
+            row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
+        rows.append(" | ".join(row))
+    print("\n".join(rows[16:44]))
+
+if __name__ == "__main__":
+    test_solve_timetable_sample()

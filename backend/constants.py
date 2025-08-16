@@ -12,3 +12,13 @@ SAT = "Saturday"
 SUN = "Sunday"
 
 DAYS = [MON, TUE, WED, THU, FRI, SAT, SUN]
+
+JSON_TO_DAY = {
+    "Mon": MON,
+    "Tue": TUE,
+    "Wed": WED,
+    "Thu": THU,
+    "Fri": FRI,
+    "Sat": SAT,
+    "Sun": SUN
+}
