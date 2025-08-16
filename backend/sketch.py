@@ -1,5 +1,5 @@
 from classes import Class, Time
-from constants import DAYS, NUMBER_OF_TIME_SLOTS
+from constants import DAYS, NUMBER_OF_TIME_SLOTS, ALWAYS_AVAILABLE
 from algorithm import solve_timetable, print_schedule
 import time
 
@@ -28,7 +28,7 @@ def test_fully_fledged_case():
         classes.append(Class(code, class_types[idx%len(class_types)], subclass_type, times))
     print(len(classes))
     before = time.time()
-    result = solve_timetable(time_slots, classes)
+    result = solve_timetable(ALWAYS_AVAILABLE, classes)
     after = time.time()
     print(f"Time taken: {after - before:.2f} seconds")
     print_schedule(result)

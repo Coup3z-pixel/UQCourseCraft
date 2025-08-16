@@ -46,10 +46,10 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     schedule_heap = ScheduleHeap(5)  # Min-heap to store the best schedules based on their scores
 
     backtrack(schedule, classes, time_slots, 0, schedule_heap)
-    if not schedule_heap:
+    if not schedule_heap.getBestSchedules():
         raise ValueError("No valid timetable found.")
         
-    return schedule_heap.getBestSchedules()[0]  # Return the best schedule from the heap
+    return schedule_heap.getBestSchedule() # Return the best schedule from the heap
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -104,8 +104,8 @@ def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]],
         if allocate_class(schedule, class_, time):
             if backtrack(schedule, classes, time_slots, i + 1, schedule_heap) and RETURN_FIRST_MATCH:
                 return True
-
             deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
+
     return False
 
 def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:

@@ -24,7 +24,7 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
         # Create time class
         time = Time(
             convertActivityNumber(course["activity_code"]),
-            course["day"],
+            JSON_TO_DAY[course["day"]],
             convertTime(course["start"]),
             convertMinToHours(course["duration"]),
             50)

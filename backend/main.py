@@ -95,8 +95,7 @@ def recommend_timetable():
     timeslots = convertForAlgorithmTimeSlots(preferences)
 
     print(courses_activities)
-
-    best_timetables = solve_timetable(timeslots, courses_activities)
+    best_timetables = solve_timetable(ALWAYS_AVAILABLE, courses_activities)
 
     # solve timetable
 
