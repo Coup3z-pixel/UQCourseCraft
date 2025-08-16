@@ -157,7 +157,7 @@ Area below is for testing purposes only.
 """
 def test_solve_timetable_sample():    
     before = time.time()
-    result = solve_timetable(time_slots, sample_classes)
+    #result = solve_timetable(time_slots, sample_classes)
     after = time.time()
     print(f"Time taken: {after - before:.2f} seconds")
     print_schedule(result)
