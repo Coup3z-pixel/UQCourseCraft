@@ -101,12 +101,20 @@ def recommend_timetable():
     for index, timetable in enumerate(best_timetables):
         print_schedule(timetable)
 
+        process_timetable = {
+                "Monday": timetable["Monday"][16:44],
+                "Tuesday": timetable["Tuesday"][16:44],
+                "Wednesday": timetable["Wednesday"][16:44],
+                "Thursday": timetable["Thursday"][16:44],
+                "Friday": timetable["Friday"][16:44],
+        }
+
         timetable_recommendation_response["recommendations"].append({
             "id": "rec_{id}".format(id=index+1),
             "name": "Recommendation {no}".format(no=index+1),
             "score": 0,
             "conflicts": 0,
-            "grid": convertTimetableToGrid(timetable)
+            "grid": convertTimetableToGrid(process_timetable)
         })
     
     return timetable_recommendation_response
