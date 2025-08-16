@@ -38,15 +38,7 @@ def parse_course_timetable(course_json, course_code):
     course_activities = []
 
     # Iterate over the activities
-    for key, activity in course_information["activities"].items():
-        print("Key:", key)
-        print("Course type: ", key.split("|")[1])
-        print("Day:", activity["day_of_week"])
-        print("Start:", activity["start_time"])
-        print("Duration:", activity["duration"])
-        print("Availability:", activity["availability"])
-        print("---")
-
+    for key, activity in course_information["activities"].items(): 
         course_activities.append({
             "course_code": course_code,
             "class_type": key.split("|")[1],
@@ -94,17 +86,13 @@ def recommend_timetable():
         print(course_timetable)
 
         course_info = parse_course_timetable(course_timetable, course)
-        courses_activities.append(course_info)
+        algo_course_compatible = convertForAlgorithm(course_info)
+        courses_activities += algo_course_compatible
 
     print(courses_activities)
+    
 
-    algo_course_compatible = convertForAlgorithm(courses_activities)
-
-    print(algo_course_compatible)
-
-    best_timetables = solve_timetable(ALWAYS_AVAILABLE,algo_course_compatible)
-
-    # solve timetable
+    best_timetables = solve_timetable(ALWAYS_AVAILABLE,courses_activities)
 
     timetable_recommendation_response = {
             "recommendations": []
@@ -118,77 +106,7 @@ def recommend_timetable():
             "conflicts": 0,
             "grid": convertTimetableToGrid(timetable)
         })
-    
-    return {
-        "recommendations": [
-    {
-      "id": "rec_001",
-      "name": "Best Overall",
-      "score": 95,
-      "conflicts": 0,
-      "grid": [
-        [
-          [],
-          [],
-          [
-            {
-              "course_code": "COMP3506 LEC 01",
-              "preferences": "preferred",
-              "rank": 1
-            }
-          ],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [
-            {
-              "course_code": "MATH2001",
-              "preferences": "preferred",
-              "rank": 2
-            }
-          ],
-          []
-        ]
-      ]
-    },
-    {
-      "id": "rec_001",
-      "name": "Best Overall",
-      "score": 95,
-      "conflicts": 0,
-      "grid": [
-        [
-          [],
-          [],
-          [
-            {
-              "course_code": "COMP3506 LEC 01",
-              "preferences": "preferred",
-              "rank": 1
-            }
-          ],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [
-            {
-              "course_code": "MATH2001",
-              "preferences": "preferred",
-              "rank": 2
-            }
-          ],
-          []
-        ]
-      ]
-    }
-  ]
-}
 
+
+    
+    return timetable_recommendation_response
