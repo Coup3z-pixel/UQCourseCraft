@@ -54,3 +54,6 @@ class Class:
     
     def __repr__(self) -> str:
         return f"""Class(course_code={self.course_code}, class_type={self.class_type}, times={self.times})"""
+    
+    def add_time(self, time: Time) -> None:
+        self.times.append(time)

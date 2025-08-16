@@ -46,6 +46,7 @@ def parse_course_timetable(course_json, course_code):
         course_activities.append({
             "course_code": course_code,
             "class_type": key.split("|")[1],
+            "activity_code": activity["activity_code"],
             "day": activity["day_of_week"],
             "start": activity["start_time"],
             "duration": activity["duration"],
@@ -131,3 +132,4 @@ def recommend_timetable():
     }
   ]
 }
+
