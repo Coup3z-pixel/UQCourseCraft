@@ -47,3 +47,34 @@ class TestTrimClasses:
 
         trim_classes(time_slots, sample_classes)
         assert all(class_.times == [] for class_ in sample_classes)
+
+# LORENZO'S TESTS
+"""
+{
+  "MON-9:00": {
+    "preference": "preferred",
+    "rank": 1
+  },
+  "MON-9:30": {
+    "preference": "preferred",
+    "rank": 1
+  },
+
+0:00 = index 0
+0:30 = 1
+1:00 = 2
+...
+12 = 24
+
+24 = 48
+
+convertForAlgorithmTimeSlots({
+  "TUE-9:00": {
+    "preference": "preferred",
+    "rank": 3
+  },
+  "TUE-9:30": {
+    "preference": "preferred",
+    "rank": 3
+  }})
+"""

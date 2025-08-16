@@ -19,8 +19,30 @@ JSON_TO_DAY = {
     "Fri": FRI
 }
 
+JSON_TO_DAY2 = {
+    "MON": MON,
+    "TUE": TUE,
+    "WED": WED,
+    "THU": THU,
+    "FRI": FRI
+}
+
 NUMBER_OF_TIME_SLOTS = 48  # 24 hours * 2 (half-hour increments)
 
 IDEAL = 3
 OKAY = 2
 BAD = 1
+UNAVAILABLE = 0
+
+JSON_TO_PREFERENCE = {
+    "preferred": IDEAL,
+    "default": UNAVAILABLE,
+    "unavailable": UNAVAILABLE
+}
+
+JSON_TO_RANK = {
+    1: IDEAL,
+    2: OKAY,
+    3: BAD,
+    4: UNAVAILABLE
+}

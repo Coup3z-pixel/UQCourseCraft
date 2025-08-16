@@ -1,7 +1,7 @@
 from classes import *
 from constants import *
 
-def convertForAlgorithm(courses_activities: list) -> list[Class]:
+def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
     """
     Converts a list of course activity dictionaries into a list of Class objects for algorithmic processing.
 
@@ -42,7 +42,25 @@ def convertForAlgorithm(courses_activities: list) -> list[Class]:
             classes.append(Class(course["course_code"], getClassType(course["class_type"]), course["class_type"], times))
             
     return classes 
-            
+
+def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
+    timeslots = {MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
+                 TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
+                 WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
+                 THU: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
+                 FRI: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)]}
+    
+    for date, preference in preferences.items():
+        if (preference["preference"] == "preferred"):
+            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_RANK.get(preference["rank"])
+        else:
+            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_PREFERENCE.get(preference["preference"])
+
+    for timeslot in timeslots.values():
+        print(timeslot)
+        
+    return timeslots
+
 
 def convertTime(time: str) -> float:
     hours, minutes = time.split(":")
@@ -56,3 +74,17 @@ def convertMinToHours(duration: str) -> float:
 
 def getClassType(subclass_type: str) -> str:
     return subclass_type[0:len(subclass_type) - 1]
+
+
+# For time slots
+def getDay(date: str) -> str:
+    # date = MON-9:00 for example
+    return JSON_TO_DAY2.get(date.split("-")[0])
+
+def getTimeIndex(date: str) -> int:
+    # data = MON-9:00 for example
+    time = date.split("-")[1]
+    index = convertTime(time) * 2
+    return int(index)
+
+
