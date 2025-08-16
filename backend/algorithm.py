@@ -46,7 +46,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     schedule_heap = ScheduleHeap(5)  # Min-heap to store the best schedules based on their scores
 
     backtrack(schedule, classes, time_slots, 0, schedule_heap)
-    if not schedule_heap.getBestSchedules():
+    if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
         
     return schedule_heap.getBestSchedule() # Return the best schedule from the heap
