@@ -305,7 +305,7 @@ export default function TimetablePage() {
   const getCellStyling = (timeIndex: number, dayIndex: number) => {
     const currentGrid = getCurrentGrid()
     const cell = currentGrid[timeIndex][dayIndex]
-    const baseClasses = `p-2 h-6 border-l border-purple-600/30 transition-all duration-150 select-none relative ${
+    const baseClasses = `p-2 h-full border-l border-purple-600/30 transition-all duration-150 select-none relative ${
       activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
     }`
 
