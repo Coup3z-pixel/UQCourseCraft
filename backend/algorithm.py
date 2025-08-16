@@ -102,9 +102,8 @@ def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]],
     class_ = classes[i]
     for time in class_.times:
         if allocate_class(schedule, class_, time):
-            if backtrack(schedule, classes, time_slots, i + 1, schedule_heap):
-                # Don't return early
-                return True# If a valid arrangement is found, return immediately
+            if backtrack(schedule, classes, time_slots, i + 1, schedule_heap) and RETURN_FIRST_MATCH:
+                return True
 
             deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
     return False
