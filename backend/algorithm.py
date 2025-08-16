@@ -47,7 +47,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
     schedule_heap = ScheduleHeap(5)
 
-    def backtrack(i: int) -> bool:
+    def backtrack(i: int, score: int) -> bool:
         """
         Recursively attempts to assign class times to the schedule using backtracking.
         Tries to find a valid arrangement of all classes without conflicts.
@@ -60,20 +60,20 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
             copy = {}  # Calculate the score of the current schedule
             for day in DAYS:
                 copy[day] = schedule[day].copy()  # Copy the current schedule to output
-            score = score_schedule(copy, time_slots)
             schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
             return True
         
         class_ = classes[i]
         for time in class_.times:
-            if allocate_class(schedule, class_, time):
-                if backtrack(i+1) and RETURN_FIRST_MATCH:
+            score_added = allocate_class(schedule, time_slots, class_, time)
+            if score_added:
+                if backtrack(i+1, score+score_added) and RETURN_FIRST_MATCH:
                     return True
                 deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
 
         return False
 
-    backtrack(0)
+    backtrack(0, 0)
     if not schedule_heap.heap:
         raise ValueError("No valid timetable found.")
 
@@ -107,7 +107,7 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
                 working_times.append(time)
         class_.times = working_times
 
-def allocate_class(schedule: dict, class_: Class, time: Time) -> int:
+def allocate_class(schedule: dict,time_slots:dict[list[int]], class_: Class, time: Time) -> int:
     """"
     Attempt to allocate a class to the schedule. Returns the increase in score if successful, otherwise returns 0.
 
@@ -119,16 +119,18 @@ def allocate_class(schedule: dict, class_: Class, time: Time) -> int:
     day = time.day
     start_time = int(time.start_time) * 2  # Convert to half-hour increments
     end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+    score = 0
     
     for slot in range(start_time, end_time):
         if schedule[day][slot] != "":
-            return False
+            return 0
         
     # If all slots are available, allocate the class
     for slot in range(start_time, end_time):
         schedule[day][slot] = f"{class_.course_code} {class_.subclass_type} {time.activity_code}"
+        score += time_slots[day][slot]  # Add the score of the time slot to the total score
         
-    return True  # Successfully allocated the class
+    return score  # Successfully allocated the class
 
 
 def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
