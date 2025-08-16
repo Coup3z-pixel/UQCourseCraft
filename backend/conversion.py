@@ -44,5 +44,38 @@ def convertMinToHours(duration: str) -> float:
 def getClassType(subclass_type: str) -> str:
     return subclass_type[0:len(subclass_type) - 1]
 
-def convertTimetableToGrid(timetable: dict):
-    pass
+
+def convertTimetableToGrid(timetable_dict):
+    """
+    Convert a timetable dictionary to an 11x5 2D array.
+    
+    Args:
+        timetable_dict (dict): Dictionary with days as keys ('Monday', 'Tuesday', etc.)
+                              and lists of time slots as values
+    
+    Returns:
+        list: 11x5 2D array where rows represent time slots and columns represent weekdays
+              [Monday, Tuesday, Wednesday, Thursday, Friday]
+    """
+    # Define the order of weekdays
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    
+    # Initialize 11x5 grid (11 time slots, 5 weekdays)
+    grid = []
+
+    for timeIndex, _ in enumerate(timetable_dict['Monday']):
+        row = []
+        for _, day in enumerate(weekdays): 
+
+            if timetable_dict[day][timeIndex] != "":
+                row.append([{
+                    "course_code": timetable_dict[day][timeIndex],
+                    "preferences": "preferred",
+                    "rank": 1
+                  }])
+            else:
+                row.append([])
+
+        grid.append(row)
+    
+    return grid

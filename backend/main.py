@@ -1,4 +1,4 @@
-from algorithm import solve_timetable
+from algorithm import print_schedule, solve_timetable
 from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
 from conversion import convertTimetableToGrid
 from conversion import convertForAlgorithm
@@ -91,7 +91,6 @@ def recommend_timetable():
 
     print(courses_activities)
     
-
     best_timetables = solve_timetable(ALWAYS_AVAILABLE,courses_activities)
 
     timetable_recommendation_response = {
@@ -99,14 +98,14 @@ def recommend_timetable():
     }
 
     for index, timetable in enumerate(best_timetables):
+        print_schedule(timetable)
+
         timetable_recommendation_response["recommendations"].append({
-            "id": "rec_{id}".format(id=index),
-            "name": "Recommendation {no}".format(no=index),
+            "id": "rec_{id}".format(id=index+1),
+            "name": "Recommendation {no}".format(no=index+1),
             "score": timetable["score"],
             "conflicts": 0,
             "grid": convertTimetableToGrid(timetable)
         })
-
-
     
     return timetable_recommendation_response
