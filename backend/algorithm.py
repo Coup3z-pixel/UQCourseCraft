@@ -33,38 +33,23 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     Raises:
         ValueError: If no valid timetable can be found or if there are classes that cannot be allocated before running the algorithm.
     """
+    # Check if there are any classes that cannot be allocated
     trim_classes(time_slots, classes)
-
     invalid_classes = [class_.course_code + class_.class_type for class_ in classes if not class_.times]
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
     
+    # Initialize the schedule with empty strings for each time slot
+    # Each day has 48 half-hour slots (24 hours * 2)
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
-    valid_schedules = []  # List to store all valid schedules found
+    schedule_heap = ScheduleHeap(5)  # Min-heap to store the best schedules based on their scores
 
-    backtrack(schedule, classes, 0, valid_schedules)
-    if not valid_schedules:
+    backtrack(schedule, classes, time_slots, 0, schedule_heap)
+    if not schedule_heap:
         raise ValueError("No valid timetable found.")
-
-    score_heap = []
-    heapify(score_heap)
-
-    for valid_schedule in valid_schedules:
-        valid_schedule['score'] = score_schedule(valid_schedule, time_slots)
-
-        if len(score_heap) == 5:
-            heappop(score_heap)
-
-        heappush(score_heap, (valid_schedule['score'], id(valid_schedule), valid_schedule))
-
-    best_schedules = []
-
-    for _ in range(5):
-        schedule_tuple = heappop(score_heap)  
-        best_schedules.append(schedule_tuple[2])
-     
-    return best_schedules  # Return the first valid schedule found
+        
+    return schedule_heap.getBestSchedules()[0]  # Return the best schedule from the heap
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -95,7 +80,7 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
         class_.times = working_times
 
 
-def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: list) -> bool:
+def backtrack(schedule: dict, classes: list[Class], time_slots: dict[list[int]], i: int, schedule_heap: ScheduleHeap) -> bool:
     """
     Recursively attempts to assign class times to the schedule using backtracking.
     Tries to find a valid arrangement of all classes without conflicts.
@@ -107,17 +92,18 @@ def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: lis
         i (int): The index of the class currently being considered.
     """
     if i == len(classes):
-        valid_schedules.append({})
+        copy = {}
         for day in DAYS:
-            valid_schedules[-1][day] = schedule[day].copy()  # Copy the current schedule to output
+            copy[day] = schedule[day].copy()  # Copy the current schedule to output
+        score = score_schedule(copy, time_slots)
+        schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
         return True
     
     class_ = classes[i]
     for time in class_.times:
         if allocate_class(schedule, class_, time):
-            if backtrack(schedule, classes, i + 1, valid_schedules):
-                # Don't return early
-                pass # If a valid arrangement is found, return immediately
+            if backtrack(schedule, classes, time_slots, i + 1, schedule_heap) and RETURN_FIRST_MATCH:
+                return True
 
             deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
     return False
@@ -152,17 +138,6 @@ def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
         schedule[day][slot] = ""  # Remove the class from the schedule
 
 
-"""
-Area below is for testing purposes only.
-"""
-def test_solve_timetable_sample():    
-    before = time.time()
-    result = solve_timetable(time_slots, sample_classes)
-    after = time.time()
-    print(f"Time taken: {after - before:.2f} seconds")
-    print_schedule(result)
-
-
 def print_schedule(schedule: dict) -> None:
     """
     Print the schedule in a readable format.
@@ -175,6 +150,3 @@ def print_schedule(schedule: dict) -> None:
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
     print("\n".join(rows[16:44]))
-
-if __name__ == "__main__":
-    test_solve_timetable_sample()
