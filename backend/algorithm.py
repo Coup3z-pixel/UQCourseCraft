@@ -33,15 +33,15 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     Raises:
         ValueError: If no valid timetable can be found or if there are classes that cannot be allocated before running the algorithm.
     """
+    # Check if there are any classes that cannot be allocated
     trim_classes(time_slots, classes)
-
     invalid_classes = [class_.course_code + class_.class_type for class_ in classes if not class_.times]
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
     
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
-    valid_schedules = []  # List to store all valid schedules found
+    valid_schedules = []
 
     backtrack(schedule, classes, 0, valid_schedules)
     if not valid_schedules:
@@ -64,7 +64,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
         schedule_tuple = heappop(score_heap)  
         best_schedules.append(schedule_tuple[2])
      
-    return best_schedules  # Return the first valid schedule found
+    return best_schedules
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
