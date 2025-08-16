@@ -1,7 +1,7 @@
 from algorithm import print_schedule, solve_timetable
 from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
 from conversion import convertTimetableToGrid
-from conversion import convertForAlgorithm, convertForAlgorithmTimeSlots
+from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from constants import *
@@ -87,7 +87,7 @@ def recommend_timetable():
         print(course_timetable)
 
         course_info = parse_course_timetable(course_timetable, course)
-        algo_course_compatible = convertForAlgorithm(course_info)
+        algo_course_compatible = convertForAlgorithmCourses(course_info)
         courses_activities += algo_course_compatible
 
     # Retrieve timeslot preferences, and convert them to algorithm format
