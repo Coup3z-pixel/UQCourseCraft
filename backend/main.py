@@ -2,6 +2,7 @@ from algorithm import solve_timetable
 from conversion import convertForAlgorithm
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from constants import *
 
 import requests
 
@@ -97,7 +98,7 @@ def recommend_timetable():
 
     print(courses_activities)
 
-    best_timetables = solve_timetable(_, courses_activities)
+    best_timetables = solve_timetable(ALWAYS_AVAILABLE, courses_activities)
 
     # solve timetable
 
