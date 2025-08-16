@@ -92,10 +92,45 @@ def recommend_timetable():
         courses_activities.append(parse_course_timetable(course_timetable, course))
 
     print(courses_activities)
-        
+
+    # solve timetable
     
     return {
         "recommendations": [
+    {
+      "id": "rec_001",
+      "name": "Best Overall",
+      "score": 95,
+      "conflicts": 0,
+      "grid": [
+        [
+          [],
+          [],
+          [
+            {
+              "course_code": "COMP3506 LEC 01",
+              "preferences": "preferred",
+              "rank": 1
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [
+            {
+              "course_code": "MATH2001",
+              "preferences": "preferred",
+              "rank": 2
+            }
+          ],
+          []
+        ]
+      ]
+    },
     {
       "id": "rec_001",
       "name": "Best Overall",
