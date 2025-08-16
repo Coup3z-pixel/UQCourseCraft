@@ -1,5 +1,6 @@
 from classes import *
 from constants import *
+import time
 
 """
 In this file, we are implementing the timetabling algorithm for UQCourseCraft.
@@ -38,12 +39,32 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
         raise ValueError(message)
     
     schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS} 
-    output = {}# Initialize output with empty lists for each day
-    backtrack(schedule, classes, 0, output)
-    if not output:
-        raise ValueError("No valid timetable found.")
-    return output
+    valid_schedules = []  # List to store all valid schedules found
 
+    backtrack(schedule, classes, 0, valid_schedules)
+    if not valid_schedules:
+        raise ValueError("No valid timetable found.")
+
+    for valid_schedule in valid_schedules:
+        valid_schedule['score'] = score_schedule(valid_schedule, time_slots)
+    
+    valid_schedules.sort(key=lambda x: x['score'], reverse=True)  # Sort schedules by score
+    print(valid_schedules[0].pop('score'))  # Remove the score from the final output
+    return valid_schedules[0]  # Return the first valid schedule found
+
+
+def score_schedule(schedule: dict, time_slots: dict) -> int:
+    """
+    Calculate the score of a schedule based on the number of ideal time slots allocated.
+    """
+    score = 0
+
+    for day in schedule:
+        for slot in range(NUMBER_OF_TIME_SLOTS):
+            if schedule[day][slot]:
+                score += time_slots[day][slot]  # Add the score of the time slot to the total score
+    
+    return score
 
 def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
     """
@@ -60,10 +81,11 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
         class_.times = working_times
 
 
-def backtrack(schedule: dict, classes: list[Class], i: int, output: dict) -> None:
+def backtrack(schedule: dict, classes: list[Class], i: int, valid_schedules: list) -> None:
     """
     Recursively attempts to assign class times to the schedule using backtracking.
     Tries to find a valid arrangement of all classes without conflicts.
+    If a valid arrangement is found, it is added to the valid_schedules list.
 
     Args:
         schedule (dict): The current timetable, mapping days to lists of time slots.
@@ -71,16 +93,20 @@ def backtrack(schedule: dict, classes: list[Class], i: int, output: dict) -> Non
         i (int): The index of the class currently being considered.
     """
     if i == len(classes):
+        valid_schedules.append({})
         for day in DAYS:
-            output[day] = schedule[day].copy()  # Copy the current schedule to output
-        return
+            valid_schedules[-1][day] = schedule[day].copy()  # Copy the current schedule to output
+        return True
     
     class_ = classes[i]
     for time in class_.times:
         if allocate_class(schedule, class_, time):
-            backtrack(schedule, classes, i + 1, output)
+            if backtrack(schedule, classes, i + 1, valid_schedules):
+                # Don't return early
+                pass  # If a valid arrangement is found, return immediately
+
             deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
-        
+    return False
 
 def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
     """"
@@ -92,7 +118,7 @@ def allocate_class(schedule: dict, class_: Class, time: Time) -> bool:
     
     for slot in range(start_time, end_time):
         if schedule[day][slot] != "":
-            return False
+            pass
         
     # If all slots are available, allocate the class
     for slot in range(start_time, end_time):
@@ -112,15 +138,17 @@ def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
         schedule[day][slot] = ""  # Remove the class from the schedule
 
 
-#space to run sketches
+"""
+Area below is for testing purposes only.
+"""
 def test_solve_timetable_sample():
     # Sample time slots: all slots are ideal (3) for Monday and Tuesday, unavailable (0) for other days
     time_slots = {
-        MON: [3] * 48,
-        TUE: [3] * 48,
-        WED: [3] * 48,
-        THU: [3] * 48,
-        FRI: [3] * 48
+        MON: [3] * 28 + [0] * 20,  # 28 ideal slots for Monday
+        TUE: [3] * 28 + [0] * 20,  # 28 ideal slots for Tuesday
+        WED: [3] * 48,  # All slots ideal for Wednesday
+        THU: [3] * 48,  # All slots ideal for Thursday
+        FRI: [3] * 48   # All slots ideal for Friday
     }
 
     sample_classes = [
@@ -129,44 +157,78 @@ def test_solve_timetable_sample():
             Time(1, MON, 8.0, 1.0, 50)
         ]),
         Class(course_code="MATH101", class_type="TUT", times=[
-            Time(9, MON, 13.0, 1.0, 40), Time(10, TUE, 14.0, 1.0, 50), Time(11, WED, 13.0, 1.0, 60)
+            Time(2, TUE, 13.0, 1.0, 40),
+            Time(3, WED, 13.0, 1.0, 50),
+            Time(4, THU, 13.0, 1.0, 60),
+            Time(5, FRI, 13.0, 1.0, 70),
+            Time(6, FRI, 15.0, 1.0, 75)
         ]),
         Class(course_code="MATH101", class_type="LAB", times=[
-            Time(12, MON, 17.0, 1.0, 30), Time(13, TUE, 17.0, 1.0, 40), Time(14, WED, 17.0, 1.0, 50)
+            Time(7, TUE, 17.0, 1.0, 30),
+            Time(8, WED, 17.0, 1.0, 40),
+            Time(9, THU, 17.0, 1.0, 50),
+            Time(10, FRI, 17.0, 1.0, 60),
+            Time(11, FRI, 18.0, 1.0, 65)
         ]),
         # PHYS102
         Class(course_code="PHYS102", class_type="LEC", times=[
-            Time(15, TUE, 9.0, 1.0, 55)
+            Time(12, TUE, 9.0, 1.0, 55)
         ]),
         Class(course_code="PHYS102", class_type="TUT", times=[
-            Time(16, TUE, 13.0, 1.0, 45), Time(17, WED, 14.0, 1.0, 55), Time(18, THU, 14.0, 1.0, 70)
+            Time(13, WED, 14.0, 1.0, 45),
+            Time(14, THU, 14.0, 1.0, 55),
+            Time(15, FRI, 14.0, 1.0, 65),
+            Time(16, FRI, 16.0, 1.0, 70),
+            Time(17, FRI, 18.0, 1.0, 75)
         ]),
         Class(course_code="PHYS102", class_type="LAB", times=[
-            Time(19, TUE, 18.0, 1.0, 45), Time(20, WED, 18.0, 1.0, 55), Time(21, THU, 17.0, 1.0, 60)
+            Time(18, WED, 18.0, 1.0, 45),
+            Time(19, THU, 18.0, 1.0, 55),
+            Time(20, FRI, 18.0, 1.0, 65),
+            Time(21, FRI, 19.0, 1.0, 70),
+            Time(22, FRI, 20.0, 1.0, 75)
         ]),
         # CHEM103
         Class(course_code="CHEM103", class_type="LEC", times=[
-            Time(22, WED, 10.0, 1.0, 75)
+            Time(23, WED, 10.0, 1.0, 75)
         ]),
         Class(course_code="CHEM103", class_type="TUT", times=[
-            Time(23, WED, 15.0, 1.0, 65), Time(24, THU, 13.0, 1.0, 70), Time(25, FRI, 13.0, 1.0, 75)
+            Time(24, THU, 13.0, 1.0, 65),
+            Time(25, FRI, 13.0, 1.0, 70),
+            Time(26, FRI, 15.0, 1.0, 75),
+            Time(27, FRI, 17.0, 1.0, 80),
+            Time(28, FRI, 19.0, 1.0, 85)
         ]),
         Class(course_code="CHEM103", class_type="LAB", times=[
-            Time(26, WED, 18.0, 1.0, 55), Time(27, THU, 18.0, 1.0, 60), Time(28, FRI, 17.0, 1.0, 65)
+            Time(29, THU, 18.0, 1.0, 55),
+            Time(30, FRI, 17.0, 1.0, 60),
+            Time(31, FRI, 18.0, 1.0, 65),
+            Time(32, FRI, 19.0, 1.0, 70),
+            Time(33, FRI, 20.0, 1.0, 75)
         ]),
         # CS104
         Class(course_code="CS104", class_type="LEC", times=[
-            Time(29, THU, 9.0, 1.0, 80)
+            Time(34, THU, 9.0, 1.0, 80)
         ]),
         Class(course_code="CS104", class_type="TUT", times=[
-            Time(30, THU, 14.0, 1.0, 70), Time(31, FRI, 10.0, 1.0, 90), Time(32, FRI, 13.0, 1.0, 75)
+            Time(35, FRI, 10.0, 1.0, 90),
+            Time(36, FRI, 12.0, 1.0, 95),
+            Time(37, FRI, 14.0, 1.0, 100),
+            Time(38, FRI, 16.0, 1.0, 105),
+            Time(39, FRI, 18.0, 1.0, 110)
         ]),
         Class(course_code="CS104", class_type="LAB", times=[
-            Time(33, THU, 17.0, 1.0, 60), Time(34, FRI, 15.0, 1.0, 65), Time(35, FRI, 17.0, 1.0, 65)
+            Time(40, FRI, 15.0, 1.0, 65),
+            Time(41, FRI, 16.0, 1.0, 70),
+            Time(42, FRI, 17.0, 1.0, 75),
+            Time(43, FRI, 18.0, 1.0, 80),
+            Time(44, FRI, 19.0, 1.0, 85)
         ])
     ]
-
+    before = time.time()
     result = solve_timetable(time_slots, sample_classes)
+    after = time.time()
+    print(f"Time taken: {after - before:.2f} seconds")
     print_schedule(result)
 
 
