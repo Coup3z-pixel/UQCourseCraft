@@ -64,7 +64,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
         schedule_tuple = heappop(score_heap)  
         best_schedules.append(schedule_tuple[2])
      
-    return best_schedules[0]  # Return the first valid schedule found
+    return best_schedules  # Return the first valid schedule found
 
 
 def score_schedule(schedule: dict, time_slots: dict) -> int:
@@ -175,6 +175,3 @@ def print_schedule(schedule: dict) -> None:
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
     print("\n".join(rows[16:44]))
-
-if __name__ == "__main__":
-    test_solve_timetable_sample()
