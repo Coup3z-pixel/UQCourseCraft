@@ -1,6 +1,6 @@
 import "./App.css"
 
-import { Search, User, Bell, Settings } from "lucide-react"
+import { Search, User, Bell, Settings, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -335,6 +335,12 @@ export default function TimetablePage() {
     setPreferencesGrid(initializeTimetable())
   }
 
+  const removeThisCourse = (index: number) => {
+	  const updateCourses = [...courses]
+	  updateCourses.splice(index, 1)
+	  setCourses(updateCourses)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen">
       <header className="p-6 pb-4">
@@ -543,9 +549,15 @@ export default function TimetablePage() {
                 {courses.map((course, index) => (
                   <div
                     key={index}
-                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center"
+                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center px-2"
                   >
                     <span className="text-sm text-purple-200 font-medium">{course}</span>
+					<Button 
+						className="ml-auto"
+						onClick={removeThisCourse}
+					>
+						<Trash className="text-white"/>
+					</Button>
                   </div>
                 ))}
                 <Button
