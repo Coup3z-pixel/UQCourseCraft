@@ -152,17 +152,6 @@ def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
         schedule[day][slot] = ""  # Remove the class from the schedule
 
 
-"""
-Area below is for testing purposes only.
-"""
-def test_solve_timetable_sample():    
-    before = time.time()
-    #result = solve_timetable(time_slots, sample_classes)
-    after = time.time()
-    print(f"Time taken: {after - before:.2f} seconds")
-    #print_schedule(result)
-
-
 def print_schedule(schedule: dict) -> None:
     """
     Print the schedule in a readable format.
@@ -175,6 +164,3 @@ def print_schedule(schedule: dict) -> None:
             row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
     print("\n".join(rows[16:44]))
-
-if __name__ == "__main__":
-    test_solve_timetable_sample()
