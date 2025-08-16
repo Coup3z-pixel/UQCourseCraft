@@ -28,6 +28,13 @@ const timeSlots = [
   "5:00",
   "5:30",
   "6:00",
+  "6:30",
+  "7:00",
+  "7:30",
+  "8:00",
+  "8:30",
+  "9:00",
+  "9:30"
 ]
 const days = ["MON", "TUE", "WED", "THU", "FRI"]
 
@@ -435,8 +442,6 @@ export default function TimetablePage() {
                 </SelectItem>
               </SelectContent>
             </Select>
-
-            <div className="bg-purple-700/50 rounded px-3 py-2 text-white text-sm font-medium">INTERNAL ▼</div>
           </div>
 
           {activeTab === "preferences" && (

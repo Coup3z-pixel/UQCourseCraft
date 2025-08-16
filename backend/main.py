@@ -25,46 +25,34 @@ def course_details(course_code, options):
 
     return timetable_response.json()
 
-def parse_course_timetable(course_json):
-    from datetime import datetime, timedelta
-    # Days mapping
-    days_map = {"Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4}
+def parse_course_timetable(course_json, course_code):
+    course_key = next(iter(course_json))
+    course_information = course_json[course_key]
 
-    # Create empty timetable
-    start_time = datetime.strptime("08:00", "%H:%M")
-    end_time = datetime.strptime("18:00", "%H:%M")
-    time_slots = []
-    while start_time < end_time:
-        time_slots.append(start_time.strftime("%H:%M"))
-        start_time += timedelta(minutes=30)
+    print(course_key) 
 
-    # Initialize timetable dict
-    timetable = {slot: [[] for _ in range(5)] for slot in time_slots}
+    course_activities = []
 
-    # Fill timetable
-    subject_data = next(iter(course_json.values()))  # first subject
-    for activity in subject_data["activities"].values():
-        day = activity["day_of_week"]
-        if day not in days_map:
-            continue
+    # Iterate over the activities
+    for key, activity in course_information["activities"].items():
+        print("Key:", key)
+        print("Course type: ", key.split("|")[1])
+        print("Day:", activity["day_of_week"])
+        print("Start:", activity["start_time"])
+        print("Duration:", activity["duration"])
+        print("Availability:", activity["availability"])
+        print("---")
 
-        day_idx = days_map[day]
-        start = datetime.strptime(activity["start_time"], "%H:%M")
-        duration = int(activity["duration"])
-        end = start + timedelta(minutes=duration)
+        course_activities.append({
+            "course_code": course_code,
+            "class_type": key.split("|")[1],
+            "day": activity["day_of_week"],
+            "start": activity["start_time"],
+            "duration": activity["duration"],
+            "availability:": activity["availability"]
+        })
 
-        # Add activity to relevant time slots
-        for slot in time_slots:
-            slot_time = datetime.strptime(slot, "%H:%M")
-            if start <= slot_time < end:
-                timetable[slot][day_idx].append(activity["description"])
-
-    # Example: print timetable
-    for slot, days in timetable.items():
-        print(slot, days)
-
-    return timetable.items()
-
+    return course_activities    
 
 @app.route("/course/<course_code>", methods = ['GET'])
 def course(course_code):
@@ -90,20 +78,8 @@ def recommend_timetable():
     body = request.get_json()
     print(body)
 
-    populated_timetable = [
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-        [[], [], [], [], []],
-    ]
-
+    courses_activities = []
+    
     for course in body.get('courses'):
         course_timetable = course_details(course, options={
             "semester": body.get('semester'),
@@ -111,6 +87,11 @@ def recommend_timetable():
         })
 
         print(course_timetable)
+
+        courses_activities.append(parse_course_timetable(course_timetable, course))
+
+    print(courses_activities)
+        
     
     return {
         "recommendations": [
