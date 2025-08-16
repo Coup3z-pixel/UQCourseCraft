@@ -1,5 +1,5 @@
 from algorithm import solve_timetable
-from constants import IDEAL, NUMBER_OF_TIME_SLOTS
+from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
 from conversion import convertTimetableToGrid
 from conversion import convertForAlgorithm
 from flask import Flask, jsonify, request
@@ -94,14 +94,15 @@ def recommend_timetable():
         print(course_timetable)
 
         course_info = parse_course_timetable(course_timetable, course)
-        algo_course_compatible = convertForAlgorithm(course_info)
-        courses_activities.append(algo_course_compatible)
+        courses_activities.append(course_info)
 
     print(courses_activities)
 
-    best_timetables = solve_timetable(time_slots={
-        
-    }, classes=courses_activities)
+    algo_course_compatible = convertForAlgorithm(courses_activities)
+
+    print(algo_course_compatible)
+
+    best_timetables = solve_timetable(ALWAYS_AVAILABLE,algo_course_compatible)
 
     # solve timetable
 
