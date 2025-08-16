@@ -28,6 +28,15 @@ class Time:
             duration={self.duration}, 
             percent_booked={self.percent_booked})
         """
+    
+    def __eq__(self, other) -> bool:
+        return (
+            self.activity_number == other.activity_number and
+            self.day == other.day and
+            self.start_time == other.start_time and
+            self.duration == other.duration and
+            self.percent_booked == other.percent_booked
+        )
 
 
 class Class:

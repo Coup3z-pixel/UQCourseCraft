@@ -1,6 +1,5 @@
 from classes import *
 from constants import *
-from pytest import *
 
 """
 In this file, we are implementing the timetabling algorithm for UQCourseCraft.
