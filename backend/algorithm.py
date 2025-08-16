@@ -23,3 +23,5 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     """
     return {}
 
+def backtrack():
+    pass
