@@ -1,4 +1,6 @@
-from algorithm import solve_timetable
+from algorithm import print_schedule, solve_timetable
+from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
+from conversion import convertTimetableToGrid
 from conversion import convertForAlgorithm
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -37,15 +39,7 @@ def parse_course_timetable(course_json, course_code):
     course_activities = []
 
     # Iterate over the activities
-    for key, activity in course_information["activities"].items():
-        print("Key:", key)
-        print("Course type: ", key.split("|")[1])
-        print("Day:", activity["day_of_week"])
-        print("Start:", activity["start_time"])
-        print("Duration:", activity["duration"])
-        print("Availability:", activity["availability"])
-        print("---")
-
+    for key, activity in course_information["activities"].items(): 
         course_activities.append({
             "course_code": course_code,
             "class_type": key.split("|")[1],
@@ -94,91 +88,25 @@ def recommend_timetable():
 
         course_info = parse_course_timetable(course_timetable, course)
         algo_course_compatible = convertForAlgorithm(course_info)
-        courses_activities.append(algo_course_compatible)
+        courses_activities += algo_course_compatible
 
     print(courses_activities)
-
+    
     best_timetables = solve_timetable(ALWAYS_AVAILABLE, courses_activities)
-
-    # solve timetable
 
     timetable_recommendation_response = {
             "recommendations": []
     }
 
-    for timetable in best_timetables:
-        pass
-    
-    return {
-        "recommendations": [
-    {
-      "id": "rec_001",
-      "name": "Best Overall",
-      "score": 95,
-      "conflicts": 0,
-      "grid": [
-        [
-          [],
-          [],
-          [
-            {
-              "course_code": "COMP3506 LEC 01",
-              "preferences": "preferred",
-              "rank": 1
-            }
-          ],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [
-            {
-              "course_code": "MATH2001",
-              "preferences": "preferred",
-              "rank": 2
-            }
-          ],
-          []
-        ]
-      ]
-    },
-    {
-      "id": "rec_001",
-      "name": "Best Overall",
-      "score": 95,
-      "conflicts": 0,
-      "grid": [
-        [
-          [],
-          [],
-          [
-            {
-              "course_code": "COMP3506 LEC 01",
-              "preferences": "preferred",
-              "rank": 1
-            }
-          ],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [
-            {
-              "course_code": "MATH2001",
-              "preferences": "preferred",
-              "rank": 2
-            }
-          ],
-          []
-        ]
-      ]
-    }
-  ]
-}
+    for index, timetable in enumerate(best_timetables):
+        print_schedule(timetable)
 
+        timetable_recommendation_response["recommendations"].append({
+            "id": "rec_{id}".format(id=index+1),
+            "name": "Recommendation {no}".format(no=index+1),
+            "score": timetable["score"],
+            "conflicts": 0,
+            "grid": convertTimetableToGrid(timetable)
+        })
+    
+    return timetable_recommendation_response

@@ -16,7 +16,7 @@ Output: A dictionary mapping the course code and class type to the ideal prefere
 Current algorithm: recursive backtracking to find the first valid timetable. Only takes into account the time slots.
 """
 
-def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
+def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[dict]:
     """
     Solve the timetabling problem by finding the best fit for course classes into user preferences.
     
@@ -48,7 +48,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> dict:
     backtrack(schedule, classes, time_slots, 0, schedule_heap)
     if not schedule_heap:
         raise ValueError("No valid timetable found.")
-
+        
     return schedule_heap.getBestSchedules()[0]  # Return the best schedule from the heap
 
 
