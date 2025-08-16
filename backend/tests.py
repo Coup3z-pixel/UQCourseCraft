@@ -89,3 +89,26 @@ convertForAlgorithmTimeSlots({
     "rank": 1
   }})
 """
+
+def testing():
+    timetable_url = "https://timetable.my.uq.edu.au/odd/rest/timetable/subjects"
+    course_body = {
+        "search-term": "CSSE1001",
+        "semester": "S2",
+        "campus": "ALL",
+        "faculty": "ALL",
+        "type": "ALL",
+        "days": ["0", "1", "2", "3", "4", "5", "6"],
+        "start-time": "00:00",
+        "end-time": "23:00"
+    }
+
+    timetable_response = requests.post(timetable_url, data=course_body)
+    timetable_json = timetable_response.json()
+    timetable_activities = parse_course_timetable(timetable_json, "CSSE1001")
+    classes = convertForAlgorithmCourses(timetable_activities, True)
+    
+    for classInstance in classes:
+        print(classInstance)
+
+testing()
