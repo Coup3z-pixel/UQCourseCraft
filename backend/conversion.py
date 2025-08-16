@@ -16,7 +16,6 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
     """
     
     classes = []
-    time_slots = dict()
 
     # Creates the Class instances, with the Time instances inside
     for course in courses_activities:
@@ -55,9 +54,6 @@ def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
             timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_RANK.get(preference["rank"])
         else:
             timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_PREFERENCE.get(preference["preference"])
-
-    for timeslot in timeslots.values():
-        print(timeslot)
         
     return timeslots
 
