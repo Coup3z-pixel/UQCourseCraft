@@ -325,11 +325,14 @@ export default function TimetablePage() {
     }
   }
 
-  const addCourse = () => {
-    if (!courseCode.trim()) return
-    setCourses([...courses, courseCode])
-    setCourseCode("")
-  }
+	const addCourse = async () => {
+		if (!courseCode.trim()) return
+
+		let course_response = await fetch(`http://127.0.0.1:5000/course/${courseCode}`)
+
+		setCourses([...courses, courseCode])
+		setCourseCode("")
+	}
 
   const clearAll = () => {
     setPreferencesGrid(initializeTimetable())

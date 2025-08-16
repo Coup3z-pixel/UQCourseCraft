@@ -56,6 +56,8 @@ def course(course_code):
     })
 
     print(course_timetable)
+    if course_timetable == {}:
+        pass
 
     return course_timetable
 
