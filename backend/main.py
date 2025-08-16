@@ -129,6 +129,40 @@ def recommend_timetable():
           []
         ]
       ]
+    },
+    {
+      "id": "rec_001",
+      "name": "Best Overall",
+      "score": 95,
+      "conflicts": 0,
+      "grid": [
+        [
+          [],
+          [],
+          [
+            {
+              "course_code": "COMP3506 LEC 01",
+              "preferences": "preferred",
+              "rank": 1
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [
+            {
+              "course_code": "MATH2001",
+              "preferences": "preferred",
+              "rank": 2
+            }
+          ],
+          []
+        ]
+      ]
     }
   ]
 }

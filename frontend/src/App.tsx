@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useRef } from "react"
+import { Toggle } from "./components/ui/toggle"
+import { Checkbox } from "./components/ui/checkbox"
 
 const timeSlots = [
   "8:00",
@@ -85,6 +87,7 @@ export default function TimetablePage() {
   const [courses, setCourses] = useState<string[]>([])
   const [semester, setSemester] = useState("S1")
   const [location, setLocation] = useState("STLUC")
+  const [attendLectures, setAttendLectures] = useState(false)
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
 
   const getCurrentGrid = () => {
@@ -128,6 +131,7 @@ export default function TimetablePage() {
           location,
           courses,
           timetablePreferences: convertTimetableForAPI(),
+		  attendLectures
         }),
       })
 
@@ -310,10 +314,31 @@ export default function TimetablePage() {
       return `${baseClasses} bg-blue-600/70 hover:bg-blue-600/80`
     }
 
+	// `bg-green-400/60 bg-green-500/60 bg-green-600/60 bg-green-700/60 bg-green-800/60`
+	// css string for loading the css into tailwind file
     switch (cell.preference) {
       case "preferred":
-        const intensity = cell.rank === 1 ? "600" : cell.rank === 2 ? "500" : "400"
-        return `${baseClasses} bg-green-${intensity}/50 ${activeTab === "preferences" ? `hover:bg-green-${intensity}/60` : ""}`
+        let intensity = ""
+		let hoverIntensity = ""
+
+		switch(cell.rank) {
+			case 1:
+				intensity = "600"
+				hoverIntensity = "800"
+				break
+			case 2:
+				intensity = "500"
+				hoverIntensity = "700"
+				break
+			case 3:
+				intensity = "400"
+				hoverIntensity = "600"
+				break
+			default:
+				intensity = "300"
+		}
+		
+        return `${baseClasses} bg-green-${intensity}/60 ${activeTab === "preferences" ? `hover:bg-green-${hoverIntensity}/60` : ""}`
       case "unavailable":
         return `${baseClasses} bg-red-600/40 ${activeTab === "preferences" ? "hover:bg-red-600/50" : ""}`
       default:
@@ -441,9 +466,21 @@ export default function TimetablePage() {
                   HERSTON
                 </SelectItem>
               </SelectContent>
-            </Select>
+            </Select>		
+<div className="flex items-center space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="attend-lectures"
+                  checked={attendLectures}
+                  onChange={(e) => setAttendLectures(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 bg-purple-700/50 border-purple-400 rounded focus:ring-purple-500 focus:ring-2"
+                />
+                <label htmlFor="attend-lectures" className="text-white text-sm">
+                  I want to attend lectures
+                </label>
+              </div>
           </div>
-
+		
           {activeTab === "preferences" && (
             <div className="space-y-3">
               <div className="text-white text-sm font-medium">Preference Rank:</div>
