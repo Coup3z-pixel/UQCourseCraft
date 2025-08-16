@@ -1,3 +1,5 @@
+from algorithm import solve_timetable
+from conversion import convertForAlgorithm
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -89,9 +91,13 @@ def recommend_timetable():
 
         print(course_timetable)
 
-        courses_activities.append(parse_course_timetable(course_timetable, course))
+        course_info = parse_course_timetable(course_timetable, course)
+        algo_course_compatible = convertForAlgorithm(course_info)
+        courses_activities.append(algo_course_compatible)
 
     print(courses_activities)
+
+    best_timetables = solve_timetable(_, courses_activities)
 
     # solve timetable
     
