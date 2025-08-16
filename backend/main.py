@@ -25,16 +25,12 @@ def course_details(course_code, options):
     }
 
     timetable_response = requests.post(timetable_url, data=course_body)
-    
-    print(timetable_response.json())
 
     return timetable_response.json()
 
 def parse_course_timetable(course_json, course_code):
     course_key = next(iter(course_json))
     course_information = course_json[course_key]
-
-    print(course_key) 
 
     course_activities = []
 
@@ -94,7 +90,7 @@ def recommend_timetable():
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
     print(courses_activities)
-    best_timetables = solve_timetable(ALWAYS_AVAILABLE, courses_activities)
+    best_timetables = solve_timetable(timeslots, courses_activities)
 
     # solve timetable
 
