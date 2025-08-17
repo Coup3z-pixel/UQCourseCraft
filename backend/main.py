@@ -91,7 +91,7 @@ def recommend_timetable():
         })
 
         course_info = parse_course_timetable(course_timetable, course)
-        algo_course_compatible = convertForAlgorithmCourses(course_info)
+        algo_course_compatible = convertForAlgorithmCourses(course_info, retrieveLectures=attend_lectures)
         courses_activities += algo_course_compatible
 
     # Retrieve timeslot preferences, and convert them to algorithm format
