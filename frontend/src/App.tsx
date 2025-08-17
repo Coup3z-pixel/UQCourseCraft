@@ -352,13 +352,13 @@ export default function TimetablePage() {
 	}
 
 	useEffect(() => {
-			// Optional: Auto-hide the alert after a few seconds
-			const timer = setTimeout(() => {
-			  setShowAlert(false);
-			}, 4000); // Hide after 3 seconds
+		// Optional: Auto-hide the alert after a few seconds
+		const timer = setTimeout(() => {
+		  setShowAlert(false);
+		}, 4000); // Hide after 3 seconds
 
-			return () => clearTimeout(timer);
-		  }, []);
+		return () => clearTimeout(timer);
+	  }, []);
 
 
   const clearAll = () => {
