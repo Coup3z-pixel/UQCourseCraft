@@ -556,37 +556,40 @@ export default function TimetablePage() {
           </div>
         )}
 
-          <div className="space-y-3">
-            <Select value={semester} onValueChange={setSemester}>
-              <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
-                <SelectValue placeholder="Select semester" />
-              </SelectTrigger>
-              <SelectContent className="bg-purple-800 border-purple-600">
-                <SelectItem value="S1" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-                  SEMESTER 1 2025
-                </SelectItem>
-                <SelectItem value="S2" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-                  SEMESTER 2 2025
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
-                <SelectValue placeholder="Select location" />
-              </SelectTrigger>
-              <SelectContent className="bg-purple-800 border-purple-600">
-                <SelectItem value="STLUC" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-                  ST LUCIA
-                </SelectItem>
-                <SelectItem value="GATTN" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-                  GATTON
-                </SelectItem>
-                <SelectItem value="HERST" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-                  HERSTON
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-3 flex">
+			<div>
+				<Select value={semester} onValueChange={setSemester}>
+				  <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+					<SelectValue placeholder="Select semester" />
+				  </SelectTrigger>
+				  <SelectContent className="bg-purple-800 border-purple-600">
+					<SelectItem value="S1" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+					  SEMESTER 1
+					</SelectItem>
+					<SelectItem value="S2" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+					  SEMESTER 2
+					</SelectItem>
+				  </SelectContent>
+				</Select>
+			</div>
+			<div className="ml-auto">
+				<Select value={location} onValueChange={setLocation}>
+				  <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+					<SelectValue placeholder="Select location" />
+				  </SelectTrigger>
+				  <SelectContent className="bg-purple-800 border-purple-600">
+					<SelectItem value="STLUC" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+					  ST LUCIA
+					</SelectItem>
+					<SelectItem value="GATTN" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+					  GATTON
+					</SelectItem>
+					<SelectItem value="HERST" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+					  HERSTON
+					</SelectItem>
+				  </SelectContent>
+				</Select>
+			</div> 
           </div>
 
           {activeTab === "preferences" && (
@@ -710,7 +713,7 @@ export default function TimetablePage() {
         {/* Existing timetable grid code */}
         <div className="flex-1">
           <div
-            className="bg-purple-800/30 rounded-lg overflow-hidden select-none h-full flex flex-col"
+            className="bg-purple-800/30 rounded-lg overflow-hidden select-none h-full flex flex-col relative"
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             style={{ userSelect: "none" }}
