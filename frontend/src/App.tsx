@@ -631,7 +631,7 @@ export default function TimetablePage() {
                     <span className="text-sm text-purple-200 font-medium">{course}</span>
 					<Button 
 						className="ml-auto"
-						onClick={removeThisCourse}
+						onClick={() => { removeThisCourse(index) }}
 					>
 						<Trash className="text-white"/>
 					</Button>
