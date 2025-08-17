@@ -72,7 +72,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
         for time in class_.times:
             score_added = allocate_class(schedule, time_slots, class_, time)
             if score_added:
-                if backtrack(i+1, score+score_added, hours_remaining-time.duration) and RETURN_FIRST_MATCH:
+                if backtrack(i+1, score + score_added, hours_remaining-time.duration) and RETURN_FIRST_MATCH:
                     return True
                 deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
 
