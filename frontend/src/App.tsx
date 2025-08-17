@@ -358,7 +358,7 @@ export default function TimetablePage() {
 
 		if (courses.includes(courseCode)) {
 			setAlertTitle("Make sure the right settings")
-			setAlertDescription("Sorry but we can't find the course that you are specificying")
+			setAlertDescription("Sorry but we can't find the course that you are specifying")
 			setShowAlert(true)
 
 			setTimeout(() => {
