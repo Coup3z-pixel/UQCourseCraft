@@ -628,12 +628,12 @@ export default function TimetablePage() {
                     className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center px-2"
                   >
                     <span className="text-sm text-purple-200 font-medium">{course}</span>
-					<Button 
-						className="ml-auto"
-						onClick={() => { removeThisCourse(index) }}
-					>
-						<Trash className="text-white"/>
-					</Button>
+						<Button 
+							className="ml-auto"
+							onClick={() => { removeThisCourse(index) }}
+						>
+							<Trash className="text-white"/>
+						</Button>
                   </div>
                 ))}
                 <Button
