@@ -482,7 +482,13 @@ export default function TimetablePage() {
       )}
 
       <header className="p-6 pb-4">
-        <div className="flex items-center justify-between mb-6">
+        
+    </header>
+
+      <div className="px-6 flex gap-6">
+
+        <div className="w-80 space-y-4">
+<div className="flex items-center justify-between mb-6">
 			<div className="flex items-center h-8">
 				<img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
 				<h1 className="text-3xl font-light text-white ml-2">UQ Course Craft</h1>
@@ -500,7 +506,6 @@ export default function TimetablePage() {
             </div>
         </div>
 
-        <div className="flex items-center justify-between mb-6">
           <div className="relative">
             <Input
               placeholder="ADD A COURSE"
@@ -542,13 +547,8 @@ export default function TimetablePage() {
                 Recommended
               </Button>
             </div>
-          </div>
         </div>
-    </header>
 
-      <div className="px-6 flex gap-6">
-
-        <div className="w-80 space-y-4">
 {activeTab === "preferences" && (
           <div className="mb-4 text-purple-200 text-sm">
             <strong>My Preferences</strong> - Left-click and drag to mark preferred times. Right-click and drag to mark
