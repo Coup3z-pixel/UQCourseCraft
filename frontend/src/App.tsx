@@ -481,7 +481,7 @@ export default function TimetablePage() {
         </div>
       )}
  
-      <div className="px-6 flex gap-6 w-full h-full">
+      <div className="px-6 flex gap-6 w-full h-screen py-4">
 
         <div className="w-80 space-y-4">
 <div className="flex items-center justify-between mb-6">
