@@ -82,6 +82,7 @@ def recommend_timetable():
     '''
     body = request.get_json()
     courses_activities = []
+    attend_lectures = body.get('attendLectures')
     
     for course in body.get('courses'):
         course_timetable = course_details(course, options={
