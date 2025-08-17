@@ -534,7 +534,7 @@ export default function TimetablePage() {
             <div className="space-y-3">
               <div className="text-white text-sm font-medium">Preference Rank:</div>
               <div className="flex gap-2">
-                {[1, 2, 3].map((rank) => (
+                {[1, 2, 3, 4].map((rank) => (
                   <Button
                     key={rank}
                     variant={currentRank === rank ? "default" : "outline"}
@@ -546,7 +546,7 @@ export default function TimetablePage() {
                         : "border-green-400 text-green-400 hover:bg-green-600/20"
                     }`}
                   >
-                    {rank === 1 ? "Preferred" : rank === 2 ? "Alright" : rank === 3 ? "Ehh" : ""}
+                    {rank === 1 ? "Ideal" : rank === 2 ? "Good" : rank === 3 ? "Bad" : "Avoid"}
                   </Button>
                 ))}
               </div>
