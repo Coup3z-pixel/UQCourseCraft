@@ -27,6 +27,8 @@ def course_details(course_code, options):
 
     timetable_response = requests.post(timetable_url, data=course_body)
 
+    
+
     return timetable_response.json()
 
 def parse_course_timetable(course_json, course_code):
@@ -51,13 +53,19 @@ def parse_course_timetable(course_json, course_code):
 
 @app.route("/course/<course_code>", methods = ['GET'])
 def course(course_code):
+    print(request.args.get('semester'))
+    print(request.args.get('location'))
+
+    if len(course_code) != 8:
+        return "Course not found", 400
+
     course_timetable = course_details(course_code, options={
         "semester": request.args.get('semester'),
         "location": request.args.get('location')
     })
 
     if course_timetable == {}:
-        pass
+        return "Course not found", 400
 
     return course_timetable
 
@@ -74,6 +82,7 @@ def recommend_timetable():
     '''
     body = request.get_json()
     courses_activities = []
+    attend_lectures = body.get('attendLectures')
     
     for course in body.get('courses'):
         course_timetable = course_details(course, options={
@@ -82,7 +91,7 @@ def recommend_timetable():
         })
 
         course_info = parse_course_timetable(course_timetable, course)
-        algo_course_compatible = convertForAlgorithmCourses(course_info)
+        algo_course_compatible = convertForAlgorithmCourses(course_info, retrieveLectures=attend_lectures)
         courses_activities += algo_course_compatible
 
     # Retrieve timeslot preferences, and convert them to algorithm format

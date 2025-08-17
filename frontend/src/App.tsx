@@ -1,10 +1,11 @@
 import "./App.css"
 
-import { Search, User, Bell, Settings, Trash } from "lucide-react"
+import { Search, User, Bell, Settings, Trash, AlertCircleIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
+import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert"
 
 const timeSlots = [
   "08:00",
@@ -60,8 +61,8 @@ type RecommendationOption = {
 }
 
 const defaultCellState: CellState = {
-  preference: "default",
-  rank: 3,
+  preference: "preferred",
+  rank: 4,
 }
 
 export default function TimetablePage() {
@@ -88,6 +89,10 @@ export default function TimetablePage() {
   const [location, setLocation] = useState("STLUC")
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
   const [attendLectures, setAttendLectures] = useState(true)
+
+	const [showAlert, setShowAlert] = useState(false);
+	const [alertTitle, setAlertTitle] = useState("");
+	const [alertDescription, setAlertDescription] = useState("")
 
   const getCurrentGrid = () => {
     return activeTab === "preferences" ? preferencesGrid : recommendationsGrid
@@ -138,7 +143,11 @@ export default function TimetablePage() {
         const data = await response.json()
         handleMultipleRecommendations(data)
         setActiveTab("recommendations")
-      }
+      } else {
+		  setAlertTitle("Can't find a viable timetable")
+		  setAlertDescription("Please be less specific about your preferences. We can't find a timetable with your current preferences")
+		  setShowAlert(true)
+	  }
     } catch (error) {
       console.error("Failed to load recommendations:", error)
     } finally {
@@ -316,8 +325,8 @@ export default function TimetablePage() {
 	// `bg-green-600/50 bg-green-500/50 bg-green-400/50`
     switch (cell.preference) {
       case "preferred":
-        const intensity = cell.rank === 1 ? "600" : cell.rank === 2 ? "500" : "400"
-        return `${baseClasses} bg-green-${intensity}/50 ${activeTab === "preferences" ? `hover:bg-green-${intensity}/60` : ""}`
+        const intensity = cell.rank === 1 ? "bg-green-400/50" : cell.rank === 2 ? "bg-green-500/50" : cell.rank === 3 ? "bg-green-600/50" : ""
+        return `${baseClasses} ${intensity}`
       case "unavailable":
         return `${baseClasses} bg-red-600/40 ${activeTab === "preferences" ? "hover:bg-red-600/50" : ""}`
       default:
@@ -328,11 +337,29 @@ export default function TimetablePage() {
 	const addCourse = async () => {
 		if (!courseCode.trim()) return
 
-		let course_response = await fetch(`http://127.0.0.1:5000/course/${courseCode}`)
+		let course_response = await fetch(`http://127.0.0.1:5000/course/${courseCode}?semester=${semester}&location=${location}`)
+
+		if (!course_response.ok) {
+			setAlertTitle("Make sure the right settings")
+			setAlertDescription("Sorry but we can't find the course that you are specificying")
+			setShowAlert(true)
+
+			return
+		}
 
 		setCourses([...courses, courseCode])
 		setCourseCode("")
 	}
+
+	useEffect(() => {
+		// Optional: Auto-hide the alert after a few seconds
+		const timer = setTimeout(() => {
+		  setShowAlert(false);
+		}, 4000); // Hide after 3 seconds
+
+		return () => clearTimeout(timer);
+	  }, []);
+
 
   const clearAll = () => {
     setPreferencesGrid(initializeTimetable())
@@ -345,7 +372,26 @@ export default function TimetablePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen">
+	<div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen">
+			<Alert
+			  className={`
+				data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95
+				data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95
+				absolute top-4 right-4 w-96 transition-opacity duration-500
+				text-white bg-purple-500 ${ showAlert ? "opacity-100" : "opacity-0" }
+			  `}
+
+			  variant={"destructive"}
+			  // You might need to add an `onAnimationEnd` to truly unmount the component after the animation finishes
+			  // For a simple fade out, the `data-[state=closed]` classes are applied when `showAlert` becomes false
+			>
+				<AlertCircleIcon />
+			  <AlertTitle>{alertTitle}</AlertTitle>
+			  <AlertDescription>
+				{alertDescription}
+			  </AlertDescription>
+			</Alert>
+
       <header className="p-6 pb-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-light text-white">Semester 2 Timetable</h1>
@@ -473,7 +519,7 @@ export default function TimetablePage() {
                         : "border-green-400 text-green-400 hover:bg-green-600/20"
                     }`}
                   >
-                    Rank {rank}
+                    {rank === 1 ? "Preferred" : rank === 2 ? "Alright" : rank === 3 ? "Ehh" : ""}
                   </Button>
                 ))}
               </div>
@@ -540,7 +586,7 @@ export default function TimetablePage() {
             </div>
           )}
 
-          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-8 text-center min-h-[200px] flex flex-col items-center justify-center">
+          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-4 text-center min-h-[200px] flex flex-col items-center justify-center">
             {courses.length === 0 ? (
               <div className="text-purple-200 text-sm font-medium">
                 SEARCH TO ADD
@@ -584,9 +630,9 @@ export default function TimetablePage() {
             style={{ userSelect: "none" }}
           >
             <div className="grid grid-cols-6 bg-purple-700/50">
-              <div className="p-3"></div>
+              <div className="p-1"></div>
               {days.map((day) => (
-                <div key={day} className="p-3 text-center text-white font-medium text-sm">
+                <div key={day} className="p-1 text-center text-white font-medium text-sm">
                   {day}
                 </div>
               ))}
@@ -594,7 +640,7 @@ export default function TimetablePage() {
 
             {timeSlots.map((time, timeIndex) => (
               <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30">
-                <div className="p-2 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
+                <div className="p-1 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
                 {days.map((day, dayIndex) => {
@@ -610,7 +656,7 @@ export default function TimetablePage() {
                       onContextMenu={(e) => e.preventDefault()}
                       style={{
                         backgroundImage:
-                          cell.preference === "default" && !cell.course_code
+                          cell.rank === 4 && !cell.course_code
                             ? `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(147, 51, 234, 0.15) 2px, rgba(147, 51, 234, 0.15) 4px)`
                             : undefined,
                       }}
