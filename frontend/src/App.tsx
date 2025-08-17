@@ -1,5 +1,3 @@
-import "./App.css"
-
 import { Search, User, Bell, Settings, Trash, AlertCircleIcon, Info, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -482,8 +480,7 @@ export default function TimetablePage() {
       )}
  
       <div className="px-6 flex gap-6 w-full h-screen py-4">
-
-        <div className="w-80 space-y-4">
+        <div className="w-80 space-y-4 overflow-auto">
 <div className="flex items-center justify-between mb-6">
 			<div className="flex items-center h-8">
 				<img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
