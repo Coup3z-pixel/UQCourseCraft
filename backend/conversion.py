@@ -2,18 +2,36 @@ from classes import *
 from main import *
 from constants import *
 
-def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
+import requests
+
+def convertForAlgorithmCourses(courses_activities: list, retrieveLectures = True) -> list[Class]:
     """
     Converts a list of course activity dictionaries into a list of Class objects for algorithmic processing.
 
     Each activity dictionary should contain keys such as 'course_code', 'activity_code', 'day', 'start', 'duration', and 'class_type'.
-    The function groups activities by course and class type, creating Class instances and adding Time instances for each activity.
+    Activities are grouped by course and class type. For each group, a Class instance is created, containing one or more Time instances
+    representing the scheduled times for that activity.
+
+    If retrieveLectures is False, activities with a class type of 'LEC' (lecture) are excluded from the output.
 
     Args:
-        courses_activities (list): List of dictionaries representing course activities.
+        courses_activities (list): List of dictionaries, each representing a course activity with required keys:
+            - 'course_code': str, course identifier
+            - 'activity_code': str, unique activity code
+            - 'day': str, day of the week
+            - 'start': str, start time in "HH:MM" format
+            - 'duration': str or int, duration in minutes
+            - 'class_type': str, type of class (e.g., 'LEC', 'TUT', etc.)
+        retrieveLectures (bool, optional): If False, lecture activities are excluded. Defaults to True.
 
     Returns:
-        list[Class]: List of Class objects, each containing associated Time objects.
+        list[Class]: List of Class objects, each containing associated Time objects for grouped activities.
+
+    Notes:
+        - Activities are grouped by course_code, class_type, and subclass_type.
+        - Time objects are created for each activity and added to the corresponding Class.
+        - If no existing Class matches the activity, a new Class is instantiated.
+        - The function prints each activity_code during processing for debugging.
     """
     
     classes = []
@@ -28,6 +46,11 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
             convertMinToHours(course["duration"]),
             50)
         
+        # prevent lectures from being instantiated if retrieveLectures is false. Below code for dealing with class instances
+        # are ignored 
+        if retrieveLectures == False and getClassType(course["class_type"]) == "LEC":
+            continue
+
         # if existing class exists, add time to it
         foundClassInstance = False
         for classInstance in classes:
@@ -47,6 +70,27 @@ def convertForAlgorithmCourses(courses_activities: list) -> list[Class]:
     return classes 
 
 def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
+    """
+    Converts user time slot preferences into a structured dictionary for algorithmic processing.
+
+    The function creates a dictionary mapping each weekday to a list of time slot values. Each value represents the user's
+    preference or rank for that time slot, based on the input preferences.
+
+    Args:
+        preferences (dict): Dictionary where keys are date strings (e.g., "MON-9:00") and values are dictionaries with:
+            - "preference": str, either "preferred" or another preference type
+            - "rank": int, rank value if preference is "preferred"
+
+    Returns:
+        dict[list[int]]: Dictionary with weekdays as keys (MON, TUE, WED, THU, FRI) and lists of integers representing
+                         preference or rank for each time slot.
+
+    Notes:
+        - Uses JSON_TO_RANK for "preferred" slots and JSON_TO_PREFERENCE for others.
+        - Time slots are indexed using getDay and getTimeIndex helpers.
+        - The length of each time slot list is NUMBER_OF_TIME_SLOTS + 1.
+    """
+
     timeslots = {MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
                  TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
                  WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
@@ -63,17 +107,56 @@ def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
 
 
 def convertTime(time: str) -> float:
+    """
+    Converts a time string in "HH:MM" format to a float representing hours.
+
+    Args:
+        time (str): Time string in "HH:MM" format.
+
+    Returns:
+        float: Time as a float, where minutes are represented as a fraction of an hour. For example, "13:30" becomes 13.5.
+    """
     hours, minutes = time.split(":")
     return int(hours) + (int(minutes) / 60)
 
 def convertActivityNumber(activityNum: str) -> int:
+    """
+    Extracts and converts the first two characters of an activity code to an integer.
+
+    Args:
+        activityNum (str): Activity code string.
+
+    Returns:
+        int: Integer representation of the activity number.
+    """
     return int(activityNum[:2])
 
 def convertMinToHours(duration: str) -> float:
+    """
+    Converts a duration in minutes to hours as a float.
+
+    Args:
+        duration (str): Duration in minutes.
+
+    Returns:
+        float: Duration in hours.
+    """
     return int(duration) / 60
 
 def getClassType(subclass_type: str) -> str:
-    return subclass_type[0:len(subclass_type) - 1]
+    """
+    Extracts the general class type from a subclass type string.
+
+    This function returns the first three characters of the subclass type string,
+    which typically represent the main class type (e.g., 'LEC' for lecture, 'TUT' for tutorial).
+
+    Args:
+        subclass_type (str): Subclass type string (e.g., 'LEC1', 'TUT2').
+
+    Returns:
+        str: General class type (first three characters of the input).
+    """
+    return subclass_type[0:3]
 
 
 def convertTimetableToGrid(timetable_dict):
@@ -116,11 +199,29 @@ def convertTimetableToGrid(timetable_dict):
 
 # For time slots
 def getDay(date: str) -> str:
-    # date = MON-9:00 for example
+    """
+    Extracts the weekday from a date string and maps it to the internal weekday representation.
+
+    Args:
+        date (str): Date string in the format "DAY-HH:MM" (e.g., "MON-9:00").
+
+    Returns:
+        str: Internal weekday representation as defined in JSON_TO_DAY2.
+    """
+
     return JSON_TO_DAY2.get(date.split("-")[0])
 
 def getTimeIndex(date: str) -> int:
-    # data = MON-9:00 for example
+    """
+    Calculates the time slot index from a date string.
+
+    Args:
+        date (str): Date string in the format "DAY-HH:MM" (e.g., "MON-9:00").
+
+    Returns:
+        int: Index of the time slot for the given time.
+    """
+
     time = date.split("-")[1]
     index = convertTime(time) * 2
     return int(index)
