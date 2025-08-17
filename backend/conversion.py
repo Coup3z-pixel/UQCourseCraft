@@ -91,11 +91,11 @@ def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
         - The length of each time slot list is NUMBER_OF_TIME_SLOTS + 1.
     """
 
-    timeslots = {MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
-                 TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
-                 WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
-                 THU: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)],
-                 FRI: [0 for _ in range(NUMBER_OF_TIME_SLOTS + 1)]}
+    timeslots = {MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+                 TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+                 WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+                 THU: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+                 FRI: [0 for _ in range(NUMBER_OF_TIME_SLOTS)]}
     
     for date, preference in preferences.items():
         if (preference["preference"] == "preferred"):
