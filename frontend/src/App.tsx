@@ -1,5 +1,3 @@
-import "./App.css"
-
 import { Search, User, Bell, Settings, Trash, AlertCircleIcon, Info, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -330,7 +328,7 @@ export default function TimetablePage() {
     }`
 
     if (cell.course_code) {
-      return `${baseClasses} bg-blue-600/70 hover:bg-blue-600/80`
+      return `${baseClasses} bg-purple-600/70 hover:bg-purple-600/80`
     }
 
 	// `bg-green-600/50 bg-green-500/50 bg-green-400/50`
@@ -397,6 +395,9 @@ export default function TimetablePage() {
 	  const updateCourses = [...courses]
 	  updateCourses.splice(index, 1)
 	  setCourses(updateCourses)
+  }
+
+  const renderCourseBlocks = () => {
   }
 
   return (
@@ -731,7 +732,7 @@ export default function TimetablePage() {
             </div>
 
             {timeSlots.map((time, timeIndex) => (
-              <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30 grow">
+              <div key={timeIndex} className="grid grid-cols-6  grow">
                 <div className="text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
@@ -742,7 +743,7 @@ export default function TimetablePage() {
                   return (
                     <div
                       key={`${dayIndex}-${timeIndex}`}
-                      className={getCellStyling(timeIndex, dayIndex)}
+                      className={getCellStyling(timeIndex, dayIndex) + `border-t ${timeIndex == 0 ? "border-purple-600/30" : (cell.course_code != currentGrid[timeIndex-1][dayIndex].course_code ? "border-purple-600/30" : "border-purple-600/30")}}`}
                       onMouseDown={(e) => handleMouseDown(timeIndex, dayIndex, e.button === 2, e)}
                       onMouseEnter={() => handleMouseEnter(timeIndex, dayIndex)}
                       onContextMenu={(e) => e.preventDefault()}
@@ -755,7 +756,7 @@ export default function TimetablePage() {
                     >
                       {cell.course_code && (
                         <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs pointer-events-none">
-                          {cell.course_code}
+							{timeIndex == 0 ? cell.course_code : (cell.course_code != currentGrid[timeIndex-1][dayIndex].course_code ? cell.course_code : "")}			
                         </div>
                       )}
                       {cell.preference === "unavailable" && !cell.course_code && (
