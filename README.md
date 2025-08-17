@@ -27,8 +27,6 @@ Coming Soon:
 
 UQCourseCraft: For students who have spent way too much time trying to do this by themselves.
 
-# Stages
-
 # AI Referencing
 Frontend - V0, Claude and ChatGPT for react development
 Backend - Copilot (code autocomplete, documentation and unit testing)
