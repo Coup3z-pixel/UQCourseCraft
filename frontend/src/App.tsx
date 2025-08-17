@@ -572,7 +572,7 @@ export default function TimetablePage() {
 				  </SelectContent>
 				</Select>
 			</div>
-			<div className="ml-auto">
+			<div className="ml-4">
 				<Select value={location} onValueChange={setLocation}>
 				  <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
 					<SelectValue placeholder="Select location" />
