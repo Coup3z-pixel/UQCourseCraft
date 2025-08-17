@@ -1,6 +1,6 @@
 import "./App.css"
 
-import { Search, User, Bell, Settings, Trash, AlertCircleIcon } from "lucide-react"
+import { Search, User, Bell, Settings, Trash, AlertCircleIcon, Info, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -69,6 +69,12 @@ export default function TimetablePage() {
   const initializeTimetable = (): CellState[][] => {
     return timeSlots.map(() => days.map(() => ({ ...defaultCellState })))
   }
+
+  const [showInfoModal, setShowInfoModal] = useState(false)
+
+  useEffect(() => {
+    setShowInfoModal(true)
+  }, [])
 
   const [activeTab, setActiveTab] = useState<"preferences" | "recommendations">("preferences")
   const [preferencesGrid, setPreferencesGrid] = useState<CellState[][]>(initializeTimetable())
@@ -278,7 +284,7 @@ export default function TimetablePage() {
     e.preventDefault()
     setIsDragging(true)
     setDragStartPosition({ timeIndex, dayIndex })
-    setDragType(isRightClick ? "unavailable" : "preferred")
+    setDragType("preferred")
     mouseDownTimeRef.current = Date.now()
     updateCell(timeIndex, dayIndex, isRightClick)
   }
@@ -415,24 +421,84 @@ export default function TimetablePage() {
 			  </AlertDescription>
 			</Alert>
 
+
+	{showInfoModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-purple-800 rounded-lg p-6 max-w-md w-full border border-purple-600 shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Info className="h-5 w-5 text-purple-300" />
+                <h2 className="text-xl font-semibold text-white">How to Use Timetable</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowInfoModal(false)}
+                className="text-purple-300 hover:bg-purple-700/50"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4 text-purple-100 text-sm">
+              <div>
+                <h3 className="font-medium text-white mb-2">Getting Started:</h3>
+                <ul className="space-y-1 list-disc list-inside">
+                  <li>Add course codes in the search bar and press Enter</li>
+                  <li>Select your semester, campus location, and preferences</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-white mb-2">Setting Preferences:</h3>
+                <ul className="space-y-1 list-disc list-inside">
+                  <li>
+                    <strong>Left-click & drag:</strong> Mark preferred time slots (green)
+                  </li>
+                  <li>
+                    <strong>Right-click & drag:</strong> Mark unavailable times (red)
+                  </li>
+                  <li>Use Rank 1-3 buttons to set preference priority</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-white mb-2">Getting Recommendations:</h3>
+                <ul className="space-y-1 list-disc list-inside">
+                  <li>Click "Get Recommendations" to generate timetable options</li>
+                  <li>Switch between "My Preferences" and "Recommended" tabs</li>
+                  <li>Select different recommendation options from the dropdown</li>
+                </ul>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setShowInfoModal(false)}
+              className="w-full mt-6 bg-purple-600 hover:bg-purple-500 text-white"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      )}
+
       <header className="p-6 pb-4">
         <div className="flex items-center justify-between mb-6">
 			<div className="flex items-center h-8">
 				<img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
-				<h1 className="text-3xl font-light text-white ml-2">Semester 2 Timetable</h1>
+				<h1 className="text-3xl font-light text-white ml-2">UQ Course Craft</h1>
 			</div>
           
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <Settings className="h-5 w-5" />
-            </Button>
-          </div>
+			<div className="flex items-center gap-3">
+				<Button
+				  variant="ghost"
+				  size="icon"
+				  className="text-white hover:bg-white/10 z-10"
+				  onClick={() => setShowInfoModal(true)}
+				>
+				  <Info className="h-5 w-5" />
+				</Button>
+            </div>
         </div>
 
         <div className="flex items-center justify-between mb-6">
@@ -479,8 +545,12 @@ export default function TimetablePage() {
             </div>
           </div>
         </div>
+    </header>
 
-        {activeTab === "preferences" && (
+      <div className="px-6 flex gap-6">
+
+        <div className="w-80 space-y-4">
+{activeTab === "preferences" && (
           <div className="mb-4 text-purple-200 text-sm">
             <strong>My Preferences</strong> - Left-click and drag to mark preferred times. Right-click and drag to mark
             unavailable times.
@@ -493,10 +563,7 @@ export default function TimetablePage() {
             to "My Preferences" tab to modify your time preferences.
           </div>
         )}
-      </header>
 
-      <div className="px-6 flex gap-6">
-        <div className="w-80 space-y-4">
           <div className="space-y-3">
             <Select value={semester} onValueChange={setSemester}>
               <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
