@@ -34,6 +34,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preferenc
         ValueError: If no valid timetable can be found or if there are classes that cannot be allocated before running the algorithm.
     """
     ideal = max(preference_levels)
+    print(classes)
     # Check if there are any classes that cannot be allocated
     #trim_classes(time_slots, classes)
     invalid_classes = [class_.course_code + class_.subclass_type for class_ in classes if not class_.times]
