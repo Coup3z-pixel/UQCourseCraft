@@ -2,7 +2,7 @@ from algorithm import print_schedule, solve_timetable
 from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
 from conversion import convertTimetableToGrid
 from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots
-from flask import Flask, jsonify, request, redirect
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from constants import *
 import time
@@ -72,6 +72,7 @@ def recommend_timetable():
 		timetablePreferences: convertTimetableForAPI()
     }
     '''
+
     body = request.get_json()
     courses_activities = []
     
@@ -88,9 +89,9 @@ def recommend_timetable():
     # Retrieve timeslot preferences, and convert them to algorithm format
     preferences = body.get('timetablePreferences')
     timeslots = convertForAlgorithmTimeSlots(preferences)
+
     before = time.time()
     best_timetables = solve_timetable(timeslots, courses_activities)
-    after = time.time()
 
     # solve timetable
 
@@ -110,9 +111,11 @@ def recommend_timetable():
         timetable_recommendation_response["recommendations"].append({
             "id": "rec_{id}".format(id=index+1),
             "name": "Recommendation {no}".format(no=index+1),
-            "score": timetable["score"],
+            "score": 0,
             "conflicts": 0,
             "grid": convertTimetableToGrid(process_timetable)
         })
+    
+    after = time.time()
     print(f"Time taken: {after - before:.2f} seconds")
     return timetable_recommendation_response
