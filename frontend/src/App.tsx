@@ -144,7 +144,9 @@ export default function TimetablePage() {
         handleMultipleRecommendations(data)
         setActiveTab("recommendations")
       } else {
-
+		  setAlertTitle("Can't find a viable timetable")
+		  setAlertDescription("Please be less specific about your preferences. We can't find a timetable with your current preferences")
+		  setShowAlert(true)
 	  }
     } catch (error) {
       console.error("Failed to load recommendations:", error)
@@ -338,14 +340,12 @@ export default function TimetablePage() {
 		let course_response = await fetch(`http://127.0.0.1:5000/course/${courseCode}?semester=${semester}&location=${location}`)
 
 		if (!course_response.ok) {
-
 			setAlertTitle("Make sure the right settings")
 			setAlertDescription("Sorry but we can't find the course that you are specificying")
 			setShowAlert(true)
 
 			return
 		}
-			
 
 		setCourses([...courses, courseCode])
 		setCourseCode("")
@@ -586,7 +586,7 @@ export default function TimetablePage() {
             </div>
           )}
 
-          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-8 text-center min-h-[200px] flex flex-col items-center justify-center">
+          <div className="border-2 border-dashed border-purple-400/50 rounded-lg p-4 text-center min-h-[200px] flex flex-col items-center justify-center">
             {courses.length === 0 ? (
               <div className="text-purple-200 text-sm font-medium">
                 SEARCH TO ADD
@@ -630,9 +630,9 @@ export default function TimetablePage() {
             style={{ userSelect: "none" }}
           >
             <div className="grid grid-cols-6 bg-purple-700/50">
-              <div className="p-3"></div>
+              <div className="p-1"></div>
               {days.map((day) => (
-                <div key={day} className="p-3 text-center text-white font-medium text-sm">
+                <div key={day} className="p-1 text-center text-white font-medium text-sm">
                   {day}
                 </div>
               ))}
@@ -640,7 +640,7 @@ export default function TimetablePage() {
 
             {timeSlots.map((time, timeIndex) => (
               <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30">
-                <div className="p-2 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
+                <div className="p-1 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
                 {days.map((day, dayIndex) => {
