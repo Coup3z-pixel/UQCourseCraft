@@ -400,7 +400,7 @@ export default function TimetablePage() {
   }
 
   return (
-	<div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen">
+	<div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen flex items-center">
 			<Alert
 			  className={`
 				data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95
@@ -480,12 +480,8 @@ export default function TimetablePage() {
           </div>
         </div>
       )}
-
-      <header className="p-6 pb-4">
-        
-    </header>
-
-      <div className="px-6 flex gap-6">
+ 
+      <div className="px-6 flex gap-6 w-full h-full">
 
         <div className="w-80 space-y-4">
 <div className="flex items-center justify-between mb-6">
@@ -612,7 +608,7 @@ export default function TimetablePage() {
                         : "border-green-400 text-green-400 hover:bg-green-600/20"
                     }`}
                   >
-                    {rank === 1 ? "Ideal" : rank === 2 ? "Good" : rank === 3 ? "Bad" : "Avoid"}
+                    {rank === 1 ? "Ideal" : rank === 2 ? "Good" : rank === 3 ? "Bad" : "Try to Avoid"}
                   </Button>
                 ))}
               </div>
@@ -717,13 +713,13 @@ export default function TimetablePage() {
         {/* Existing timetable grid code */}
         <div className="flex-1">
           <div
-            className="bg-purple-800/30 rounded-lg overflow-hidden select-none"
+            className="bg-purple-800/30 rounded-lg overflow-hidden select-none h-full flex flex-col"
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             style={{ userSelect: "none" }}
           >
-            <div className="grid grid-cols-6 bg-purple-700/50">
-              <div className="p-1"></div>
+            <div className="grid grid-cols-6 bg-purple-700/50 grow">
+              <div className=""></div>
               {days.map((day) => (
                 <div key={day} className="p-1 text-center text-white font-medium text-sm">
                   {day}
@@ -732,8 +728,8 @@ export default function TimetablePage() {
             </div>
 
             {timeSlots.map((time, timeIndex) => (
-              <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30">
-                <div className="p-1 text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
+              <div key={timeIndex} className="grid grid-cols-6 border-t border-purple-600/30 grow">
+                <div className="text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
                 {days.map((day, dayIndex) => {
