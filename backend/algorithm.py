@@ -16,7 +16,7 @@ Output: A dictionary mapping the course code and class type to the ideal prefere
 Current algorithm: recursive backtracking to find the first valid timetable. Only takes into account the time slots.
 """
 
-def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[dict]:
+def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preference_levels: list[int]=STANDARD_LEVELS) -> list[dict]:
     """
     Solve the timetabling problem by finding the best fit for course classes into user preferences.
     
@@ -33,8 +33,9 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
     Raises:
         ValueError: If no valid timetable can be found or if there are classes that cannot be allocated before running the algorithm.
     """
+    ideal = max(preference_levels)
     # Check if there are any classes that cannot be allocated
-    trim_classes(time_slots, classes)
+    #trim_classes(time_slots, classes)
     invalid_classes = [class_.course_code + class_.subclass_type for class_ in classes if not class_.times]
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
@@ -65,7 +66,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class]) -> list[d
             return True
         
         # IF the current schedule cannot make it onto the top 5 schedules, return False
-        if len(schedule_heap.heap) == schedule_heap.capacity and score + (hours_remaining) * 2 * IDEAL < schedule_heap.heap[0].score:
+        if len(schedule_heap.heap) == schedule_heap.capacity and score + (hours_remaining) * 2 * ideal < schedule_heap.heap[0].score:
             return False
         
         class_ = classes[i]
