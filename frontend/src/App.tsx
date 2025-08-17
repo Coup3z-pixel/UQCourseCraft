@@ -549,7 +549,6 @@ export default function TimetablePage() {
                     {rank === 1 ? "Preferred" : rank === 2 ? "Alright" : rank === 3 ? "Ehh" : ""}
                   </Button>
                 ))}
-				<Button></Button>
               </div>
               <div className="flex items-center space-x-2 pt-2">
                 <input
