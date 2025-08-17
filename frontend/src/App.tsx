@@ -147,6 +147,12 @@ export default function TimetablePage() {
 		  setAlertTitle("Can't find a viable timetable")
 		  setAlertDescription("Please be less specific about your preferences. We can't find a timetable with your current preferences")
 		  setShowAlert(true)
+
+			setTimeout(() => {
+			  setShowAlert(false);
+			}, 2000); // Hide after 3 seconds
+
+
 	  }
     } catch (error) {
       console.error("Failed to load recommendations:", error)
@@ -344,7 +350,24 @@ export default function TimetablePage() {
 			setAlertDescription("Sorry but we can't find the course that you are specificying")
 			setShowAlert(true)
 
+			setTimeout(() => {
+			  setShowAlert(false);
+			}, 2000); // Hide after 3 seconds
+
 			return
+		}
+
+		if (courses.includes(courseCode)) {
+			setAlertTitle("Make sure the right settings")
+			setAlertDescription("Sorry but we can't find the course that you are specificying")
+			setShowAlert(true)
+
+			setTimeout(() => {
+			  setShowAlert(false);
+			}, 2000); // Hide after 3 seconds
+
+			return
+
 		}
 
 		setCourses([...courses, courseCode])
@@ -394,7 +417,11 @@ export default function TimetablePage() {
 
       <header className="p-6 pb-4">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-light text-white">Semester 2 Timetable</h1>
+			<div className="flex items-center h-8">
+				<img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
+				<h1 className="text-3xl font-light text-white ml-2">Semester 2 Timetable</h1>
+			</div>
+          
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
               <Bell className="h-5 w-5" />
@@ -522,6 +549,7 @@ export default function TimetablePage() {
                     {rank === 1 ? "Preferred" : rank === 2 ? "Alright" : rank === 3 ? "Ehh" : ""}
                   </Button>
                 ))}
+				<Button></Button>
               </div>
               <div className="flex items-center space-x-2 pt-2">
                 <input
