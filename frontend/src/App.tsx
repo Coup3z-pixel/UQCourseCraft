@@ -1,7 +1,7 @@
-import { Search, User, Bell, Settings, Trash, AlertCircleIcon, Info, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Search, Trash, AlertCircleIcon, Info, X } from "lucide-react"
+import { Button } from "./components/ui/button"
+import { Input } from "./components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
 import { useState, useRef, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert"
 
@@ -216,30 +216,7 @@ export default function TimetablePage() {
     })
 
     return newGrid
-  }
-
-  const handleGridResponse = (gridData: APIResponse[][][]) => {
-    setRecommendationsGrid((prev) => {
-      const newGrid = prev.map((row) => row.map((cell) => ({ ...cell })))
-
-      gridData.forEach((timeRow, timeIndex) => {
-        timeRow.forEach((dayCell, dayIndex) => {
-          if (Array.isArray(dayCell) && dayCell.length > 0) {
-            const courseData = dayCell[0]
-            if (courseData?.course_code) {
-              newGrid[timeIndex][dayIndex] = {
-                preference: (courseData.preferences as "preferred" | "unavailable") || "preferred",
-                rank: courseData.rank || 1,
-                course_code: courseData.course_code,
-              }
-            }
-          }
-        })
-      })
-
-      return newGrid
-    })
-  }
+  } 
 
   const selectRecommendation = (recommendationId: string) => {
     const selected = recommendationOptions.find((opt) => opt.id === recommendationId)
@@ -323,7 +300,7 @@ export default function TimetablePage() {
   const getCellStyling = (timeIndex: number, dayIndex: number) => {
     const currentGrid = getCurrentGrid()
     const cell = currentGrid[timeIndex][dayIndex]
-    const baseClasses = `p-2 h-full border-l border-purple-600/30 transition-all duration-150 select-none relative ${
+    const baseClasses = `p-2 h-full border-l border-purple-600/30 transition-all duration-150 select-none relative border-t ${
       activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
     }`
 
@@ -334,8 +311,8 @@ export default function TimetablePage() {
 	// `bg-green-600/50 bg-green-500/50 bg-green-400/50`
     switch (cell.preference) {
       case "preferred":
-        const intensity = cell.rank === 1 ? "bg-green-400/50" : cell.rank === 2 ? "bg-green-500/50" : cell.rank === 3 ? "bg-green-600/50" : ""
-        return `${baseClasses} ${intensity}`
+        const intensity = cell.rank === 1 ? "green-400/50" : cell.rank === 2 ? "green-500/50" : cell.rank === 3 ? "green-600/50" : ""
+        return `${baseClasses} bg-${intensity}`
       case "unavailable":
         return `${baseClasses} bg-red-600/40 ${activeTab === "preferences" ? "hover:bg-red-600/50" : ""}`
       default:
@@ -395,9 +372,6 @@ export default function TimetablePage() {
 	  const updateCourses = [...courses]
 	  updateCourses.splice(index, 1)
 	  setCourses(updateCourses)
-  }
-
-  const renderCourseBlocks = () => {
   }
 
   return (
@@ -735,14 +709,14 @@ export default function TimetablePage() {
                 <div className="text-white font-medium text-xs bg-purple-700/20 flex items-center justify-center">
                   {time}
                 </div>
-                {days.map((day, dayIndex) => {
+                {days.map((_, dayIndex) => {
                   const currentGrid = getCurrentGrid()
                   const cell = currentGrid[timeIndex][dayIndex]
 
                   return (
                     <div
                       key={`${dayIndex}-${timeIndex}`}
-                      className={getCellStyling(timeIndex, dayIndex) + `border-t ${timeIndex == 0 ? "border-purple-600/30" : (cell.course_code != currentGrid[timeIndex-1][dayIndex].course_code ? "border-purple-600/30" : "border-purple-600/30")}}`}
+                      className={getCellStyling(timeIndex, dayIndex) + ` border-t`}
                       onMouseDown={(e) => handleMouseDown(timeIndex, dayIndex, e.button === 2, e)}
                       onMouseEnter={() => handleMouseEnter(timeIndex, dayIndex)}
                       onContextMenu={(e) => e.preventDefault()}

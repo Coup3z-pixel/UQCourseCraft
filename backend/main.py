@@ -1,8 +1,6 @@
-from algorithm import print_schedule, solve_timetable
-from constants import ALWAYS_AVAILABLE, IDEAL, NUMBER_OF_TIME_SLOTS
-from conversion import convertTimetableToGrid
-from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots
-from flask import Flask, jsonify, request, redirect
+from algorithm import solve_timetable
+from conversion import convertForAlgorithmCourses, convertForAlgorithmTimeSlots, convertTimetableToGrid
+from flask import Flask, request
 from flask_cors import CORS
 from constants import *
 import time
@@ -125,3 +123,6 @@ def recommend_timetable():
         })
     print(f"Time taken: {after - before:.2f} seconds")
     return timetable_recommendation_response
+
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=5000)
