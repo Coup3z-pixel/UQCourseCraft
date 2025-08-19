@@ -1,16 +1,19 @@
-# Frontend Dockerfile
-FROM node:20-slim AS build
+# This is the newer version
+
+FROM node:18-alpine
 
 WORKDIR /app
-COPY package*.json ./
+
+COPY package.json .
+
 RUN npm install
 
+RUN npm i -g serve
+
 COPY . .
+
 RUN npm run build
 
-# Serve with Nginx
-FROM nginx:stable-alpine
-COPY --from=build /app/build /usr/share/nginx/html
-
 EXPOSE 3000
-CMD ["nginx", "-g", "daemon off;"]
+
+CMD [ "serve", "-s", "dist" ]
