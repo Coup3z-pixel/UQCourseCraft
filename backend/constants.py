@@ -1,4 +1,3 @@
-from enum import StrEnum
 """
 The file containing all constants used in the UQCourseCraft backend.
 """
