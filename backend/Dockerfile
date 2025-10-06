@@ -27,5 +27,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Copy the backend application code
 COPY backend/ .
 
-ENTRYPOINT ["python3"]
-CMD ["main.py"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:5000", "main:app"]
