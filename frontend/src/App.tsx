@@ -252,7 +252,7 @@ export default function TimetablePage() {
     })
   }
 
-  const handleMouseDown = (timeIndex: number, dayIndex: number, isRightClick: boolean, e: React.MouseEvent) => {
+  const handleMouseDown = (timeIndex: number, dayIndex: number, e: React.MouseEvent) => {
     if (activeTab !== "preferences") return
 
     e.preventDefault()
@@ -260,7 +260,7 @@ export default function TimetablePage() {
     setDragStartPosition({ timeIndex, dayIndex })
     setDragType("preferred")
     mouseDownTimeRef.current = Date.now()
-    updateCell(timeIndex, dayIndex, isRightClick)
+    updateCell(timeIndex, dayIndex, false)
   }
 
   const handleMouseEnter = (timeIndex: number, dayIndex: number) => {
@@ -717,7 +717,7 @@ export default function TimetablePage() {
                     <div
                       key={`${dayIndex}-${timeIndex}`}
                       className={getCellStyling(timeIndex, dayIndex) + ` border-t`}
-                      onMouseDown={(e) => handleMouseDown(timeIndex, dayIndex, e.button === 2, e)}
+                      onMouseDown={(e) => handleMouseDown(timeIndex, dayIndex, e)}
                       onMouseEnter={() => handleMouseEnter(timeIndex, dayIndex)}
                       onContextMenu={(e) => e.preventDefault()}
                       style={{

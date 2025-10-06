@@ -2,11 +2,13 @@
 backend/.idea/
 backend/.vscode/
 __pycache__/
+backend/.venv
 backend/dist/
 backend/.coverage*
 backend/htmlcov/
 backend/.tox/
 backend/docs/_build/
+
 
 # dependencies
 frontend/node_modules
