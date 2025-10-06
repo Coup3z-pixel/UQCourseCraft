@@ -13,7 +13,7 @@ from datetime import datetime
 import requests
 
 app = Flask(__name__, static_folder='build')
-cors = CORS(app)
+cors = CORS(app, origins=["https://uqcoursecraft.onrender.com/", "http://localhost:5173", "http://127.0.0.1:5173"])
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 logger_path = os.path.join(BASE_DIR, "logger.json")
