@@ -65,7 +65,7 @@ export default function AssessmentCalendar() {
     setIsLoading(true)
     
     try {
-      const response = await fetch(`http://localhost:5000/course/${courseCode}?semester=${semester}&location=${location}`)
+      const response = await fetch(`https://uqcoursecraft.onrender.com/course/${courseCode}?semester=${semester}&location=${location}`)
 
       if (!response.ok) {
         setAlertTitle("Course Not Found")
@@ -88,7 +88,7 @@ export default function AssessmentCalendar() {
 
       setCourses([...courses, newCourse])
       
-      const assessmentResponse = await fetch(`http://localhost:5000/assessment/${courseCode}?semester=${semester}&location=${location}`)
+      const assessmentResponse = await fetch(`https://uqcoursecraft.onrender.com/assessment/${courseCode}?semester=${semester}&location=${location}`)
       if (assessmentResponse.ok) {
         const newAssessments = await assessmentResponse.json()
         setAssessments(prev => [...prev, ...newAssessments])
