@@ -1,4 +1,3 @@
-
 # UQCourseCraft
 
 UQCourseCraft is your saving grace when it comes to timetabling! 🚀
@@ -8,6 +7,12 @@ UQCourseCraft is your saving grace when it comes to timetabling! 🚀
 Key Features:
 
 UQCourseCraft is designed to make your university experience more flexible, efficient, and fun. Start planning smarter and enjoy more of what matters most!
+
+# Installation
+
+```
+docker-compose up --build
+```
 
 # UQCourseCraft
 

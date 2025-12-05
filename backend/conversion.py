@@ -1,5 +1,4 @@
 from classes import *
-from main import *
 from constants import *
 
 import requests
