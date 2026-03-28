@@ -1,4 +1,4 @@
-import { Search, Trash, AlertCircleIcon, Info, X } from "lucide-react"
+import { Search, Trash, AlertCircleIcon, Info, X, Menu } from "lucide-react"
 import { Button } from "./components/ui/button"
 import { Input } from "./components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select"
@@ -93,9 +93,10 @@ export default function TimetablePage() {
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
   const [attendLectures, setAttendLectures] = useState(true)
 
-	const [showAlert, setShowAlert] = useState(false);
-	const [alertTitle, setAlertTitle] = useState("");
-	const [alertDescription, setAlertDescription] = useState("")
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const getCurrentGrid = () => {
     return activeTab === "preferences" ? preferencesGrid : recommendationsGrid
@@ -147,16 +148,16 @@ export default function TimetablePage() {
         handleMultipleRecommendations(data)
         setActiveTab("recommendations")
       } else {
-		  setAlertTitle("Can't find a viable timetable")
-		  setAlertDescription("Please be less specific about your preferences. We can't find a timetable with your current preferences")
-		  setShowAlert(true)
+        setAlertTitle("Can't find a viable timetable")
+        setAlertDescription("Please be less specific about your preferences. We can't find a timetable with your current preferences")
+        setShowAlert(true)
 
-			setTimeout(() => {
-			  setShowAlert(false);
-			}, 2000); // Hide after 3 seconds
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000); // Hide after 3 seconds
 
 
-	  }
+      }
     } catch (error) {
       console.error("Failed to load recommendations:", error)
     } finally {
@@ -301,14 +302,14 @@ export default function TimetablePage() {
     const currentGrid = getCurrentGrid()
     const cell = currentGrid[timeIndex][dayIndex]
     const baseClasses = `p-2 h-full border-l border-purple-600/30 transition-all duration-150 select-none relative border-t ${
-      activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
-    }`
+activeTab === "preferences" ? "cursor-pointer" : "cursor-default"
+}`
 
     if (cell.course_code) {
       return `${baseClasses} bg-purple-600/70 hover:bg-purple-600/80`
     }
 
-	// `bg-green-600/50 bg-green-500/50 bg-green-400/50`
+    // `bg-green-600/50 bg-green-500/50 bg-green-400/50`
     switch (cell.preference) {
       case "preferred":
         const intensity = cell.rank === 1 ? "green-400/50" : cell.rank === 2 ? "green-500/50" : cell.rank === 3 ? "green-600/50" : ""
@@ -320,48 +321,48 @@ export default function TimetablePage() {
     }
   }
 
-	const addCourse = async () => {
-		if (!courseCode.trim()) return
+  const addCourse = async () => {
+    if (!courseCode.trim()) return
 
-		let course_response = await fetch(`https://uqcoursecraft.onrender.com/course/${courseCode}?semester=${semester}&location=${location}`)
+    let course_response = await fetch(`https://uqcoursecraft.onrender.com/course/${courseCode}?semester=${semester}&location=${location}`)
 
-		if (!course_response.ok) {
-			setAlertTitle("Make sure the right settings")
-			setAlertDescription("Sorry but we can't find the course that you are specificying")
-			setShowAlert(true)
+    if (!course_response.ok) {
+      setAlertTitle("Make sure the right settings")
+      setAlertDescription("Sorry but we can't find the course that you are specificying")
+      setShowAlert(true)
 
-			setTimeout(() => {
-			  setShowAlert(false);
-			}, 2000); // Hide after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000); // Hide after 3 seconds
 
-			return
-		}
+      return
+    }
 
-		if (courses.includes(courseCode)) {
-			setAlertTitle("Make sure the right settings")
-			setAlertDescription("Sorry but we can't find the course that you are specifying")
-			setShowAlert(true)
+    if (courses.includes(courseCode)) {
+      setAlertTitle("Make sure the right settings")
+      setAlertDescription("Sorry but we can't find the course that you are specifying")
+      setShowAlert(true)
 
-			setTimeout(() => {
-			  setShowAlert(false);
-			}, 2000); // Hide after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000); // Hide after 3 seconds
 
-			return
+      return
 
-		}
+    }
 
-		setCourses([...courses, courseCode])
-		setCourseCode("")
-	}
+    setCourses([...courses, courseCode])
+    setCourseCode("")
+  }
 
-	useEffect(() => {
-		// Optional: Auto-hide the alert after a few seconds
-		const timer = setTimeout(() => {
-		  setShowAlert(false);
-		}, 4000); // Hide after 3 seconds
+  useEffect(() => {
+    // Optional: Auto-hide the alert after a few seconds
+    const timer = setTimeout(() => {
+      setShowAlert(false);
+    }, 4000); // Hide after 3 seconds
 
-		return () => clearTimeout(timer);
-	  }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
 
   const clearAll = () => {
@@ -369,34 +370,34 @@ export default function TimetablePage() {
   }
 
   const removeThisCourse = (index: number) => {
-	  const updateCourses = [...courses]
-	  updateCourses.splice(index, 1)
-	  setCourses(updateCourses)
+    const updateCourses = [...courses]
+    updateCourses.splice(index, 1)
+    setCourses(updateCourses)
   }
 
   return (
-	<div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen flex items-center">
-			<Alert
-			  className={`
-				data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95
-				data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95
-				absolute top-4 right-4 w-96 transition-opacity duration-500
-				text-white bg-purple-500 ${ showAlert ? "opacity-100" : "opacity-0" }
-			  `}
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 w-screen flex items-center">
+      <Alert
+        className={`
+data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95
+data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95
+absolute top-4 right-4 w-96 transition-opacity duration-500
+text-white bg-purple-500 ${ showAlert ? "opacity-100" : "opacity-0" }
+`}
 
-			  variant={"destructive"}
-			  // You might need to add an `onAnimationEnd` to truly unmount the component after the animation finishes
-			  // For a simple fade out, the `data-[state=closed]` classes are applied when `showAlert` becomes false
-			>
-				<AlertCircleIcon />
-			  <AlertTitle>{alertTitle}</AlertTitle>
-			  <AlertDescription>
-				{alertDescription}
-			  </AlertDescription>
-			</Alert>
+        variant={"destructive"}
+        // You might need to add an `onAnimationEnd` to truly unmount the component after the animation finishes
+        // For a simple fade out, the `data-[state=closed]` classes are applied when `showAlert` becomes false
+      >
+        <AlertCircleIcon />
+        <AlertTitle>{alertTitle}</AlertTitle>
+        <AlertDescription>
+          {alertDescription}
+        </AlertDescription>
+      </Alert>
 
 
-	{showInfoModal && (
+      {showInfoModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-purple-800 rounded-lg p-6 max-w-md w-full border border-purple-600 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
@@ -455,31 +456,59 @@ export default function TimetablePage() {
           </div>
         </div>
       )}
- 
+
+      {/* sidebar */}
       <div className="px-6 flex gap-6 w-full h-screen py-4">
-        <div className="w-80 space-y-4 overflow-auto">
-<div className="flex items-center justify-between mb-6">
-			<div className="flex items-center h-8">
-				<img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
-				<h1 className="text-3xl font-light text-white ml-2">UQ Course Craft</h1>
-			</div>
-          
-			<div className="flex items-center gap-3">
-				<Button
-				  variant="ghost"
-				  size="icon"
-				  className="text-white hover:bg-white/10 z-10"
-				  onClick={() => setShowInfoModal(true)}
-				>
-				  <Info className="h-5 w-5" />
-				</Button>
+        {/* Sidebar toggle button - visible on lg: and below */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-4 left-4 z-30 text-white hover:bg-white/20 lg:hidden"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
+
+        {/* Backdrop overlay - only visible when sidebar is open on mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar */}
+        <div className={`
+          w-80 space-y-4 overflow-auto h-full
+          fixed lg:relative inset-y-0 left-0 z-50
+          bg-purple-900/95 lg:bg-transparent
+          transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          lg:transform-none
+          px-6 lg:px-0 py-4 lg:py-0
+        `}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center h-8">
+              <img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
+              <h1 className={`${setSidebarOpen ? "text-xl" : "text-3xl"} font-light text-white ml-2`}>UQ Course Craft</h1>
             </div>
-        </div>
+
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/10 z-10"
+                onClick={() => setShowInfoModal(true)}
+              >
+                <Info className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
 
           <div className="relative">
             <Input
               placeholder="ADD A COURSE"
-              className="w-80 bg-white/90 border-0 text-gray-700 placeholder:text-gray-500 pr-10"
+              className="w-full bg-white/90 border-0 text-gray-700 placeholder:text-gray-500 pr-10"
               value={courseCode}
               onChange={handleChange}
               onKeyDown={(e) => {
@@ -499,8 +528,8 @@ export default function TimetablePage() {
                 size="sm"
                 onClick={() => setActiveTab("preferences")}
                 className={`rounded-r-none ${
-                  activeTab === "preferences" ? "bg-purple-600 text-white" : "text-purple-200 hover:bg-purple-600/30"
-                }`}
+activeTab === "preferences" ? "bg-purple-600 text-white" : "text-purple-200 hover:bg-purple-600/30"
+}`}
               >
                 My Preferences
               </Button>
@@ -509,64 +538,64 @@ export default function TimetablePage() {
                 size="sm"
                 onClick={() => setActiveTab("recommendations")}
                 className={`rounded-l-none ${
-                  activeTab === "recommendations"
-                    ? "bg-purple-600 text-white"
-                    : "text-purple-200 hover:bg-purple-600/30"
-                }`}
+activeTab === "recommendations"
+? "bg-purple-600 text-white"
+: "text-purple-200 hover:bg-purple-600/30"
+}`}
               >
                 Recommended
               </Button>
             </div>
-        </div>
-
-{activeTab === "preferences" && (
-          <div className="mb-4 text-purple-200 text-sm">
-            <strong>My Preferences</strong> - Left-click and drag to mark preferred times. Right-click and drag to mark
-            unavailable times.
           </div>
-        )}
 
-        {activeTab === "recommendations" && (
-          <div className="mb-4 text-purple-200 text-sm">
-            <strong>Recommended Timetable</strong> - Generated based on your course selections and preferences. Switch
-            to "My Preferences" tab to modify your time preferences.
-          </div>
-        )}
+          {activeTab === "preferences" && (
+            <div className="mb-4 text-purple-200 text-sm">
+              <strong>My Preferences</strong> - Left-click and drag to mark preferred times. Right-click and drag to mark
+              unavailable times.
+            </div>
+          )}
+
+          {activeTab === "recommendations" && (
+            <div className="mb-4 text-purple-200 text-sm">
+              <strong>Recommended Timetable</strong> - Generated based on your course selections and preferences. Switch
+              to "My Preferences" tab to modify your time preferences.
+            </div>
+          )}
 
           <div className="space-y-3 flex">
-			<div>
-				<Select value={semester} onValueChange={setSemester}>
-				  <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
-					<SelectValue placeholder="Select semester" />
-				  </SelectTrigger>
-				  <SelectContent className="bg-purple-800 border-purple-600">
-					<SelectItem value="S1" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-					  SEMESTER 1
-					</SelectItem>
-					<SelectItem value="S2" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-					  SEMESTER 2
-					</SelectItem>
-				  </SelectContent>
-				</Select>
-			</div>
-			<div className="ml-4">
-				<Select value={location} onValueChange={setLocation}>
-				  <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
-					<SelectValue placeholder="Select location" />
-				  </SelectTrigger>
-				  <SelectContent className="bg-purple-800 border-purple-600">
-					<SelectItem value="STLUC" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-					  ST LUCIA
-					</SelectItem>
-					<SelectItem value="GATTN" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-					  GATTON
-					</SelectItem>
-					<SelectItem value="HERST" className="text-white hover:bg-purple-700 focus:bg-purple-700">
-					  HERSTON
-					</SelectItem>
-				  </SelectContent>
-				</Select>
-			</div> 
+            <div>
+              <Select value={semester} onValueChange={setSemester}>
+                <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+                  <SelectValue placeholder="Select semester" />
+                </SelectTrigger>
+                <SelectContent className="bg-purple-800 border-purple-600">
+                  <SelectItem value="S1" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                    SEMESTER 1
+                  </SelectItem>
+                  <SelectItem value="S2" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                    SEMESTER 2
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="ml-4">
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger className="bg-purple-700/50 border-purple-400 text-white text-sm font-medium">
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent className="bg-purple-800 border-purple-600">
+                  <SelectItem value="STLUC" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                    ST LUCIA
+                  </SelectItem>
+                  <SelectItem value="GATTN" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                    GATTON
+                  </SelectItem>
+                  <SelectItem value="HERST" className="text-white hover:bg-purple-700 focus:bg-purple-700">
+                    HERSTON
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div> 
           </div>
 
           {activeTab === "preferences" && (
@@ -580,10 +609,10 @@ export default function TimetablePage() {
                     size="sm"
                     onClick={() => setCurrentRank(rank)}
                     className={`${
-                      currentRank === rank
-                        ? "bg-green-600 text-white"
-                        : "border-green-400 text-green-400 hover:bg-green-600/20"
-                    }`}
+currentRank === rank
+? "bg-green-600 text-white"
+: "border-green-400 text-green-400 hover:bg-green-600/20"
+}`}
                   >
                     {rank === 1 ? "Ideal" : rank === 2 ? "Good" : rank === 3 ? "Bad" : "Try to Avoid"}
                   </Button>
@@ -660,30 +689,30 @@ export default function TimetablePage() {
                 COURSES
               </div>
             ) : (
-              <div className="w-full space-y-3">
-                {courses.map((course, index) => (
-                  <div
-                    key={index}
-                    className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center px-2"
+                <div className="w-full space-y-3">
+                  {courses.map((course, index) => (
+                    <div
+                      key={index}
+                      className="w-full border-2 border-purple-400/50 border-dashed rounded-lg h-12 flex items-center justify-center px-2"
+                    >
+                      <span className="text-sm text-purple-200 font-medium">{course}</span>
+                      <Button 
+                        className="ml-auto"
+                        onClick={() => { removeThisCourse(index) }}
+                      >
+                        <Trash className="text-white"/>
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    onClick={recommendTimetable}
+                    disabled={isLoadingRecommendations}
+                    className="w-full bg-purple-600 hover:bg-purple-500 text-white mt-4"
                   >
-                    <span className="text-sm text-purple-200 font-medium">{course}</span>
-						<Button 
-							className="ml-auto"
-							onClick={() => { removeThisCourse(index) }}
-						>
-							<Trash className="text-white"/>
-						</Button>
-                  </div>
-                ))}
-                <Button
-                  onClick={recommendTimetable}
-                  disabled={isLoadingRecommendations}
-                  className="w-full bg-purple-600 hover:bg-purple-500 text-white mt-4"
-                >
-                  {isLoadingRecommendations ? "Loading..." : "Get Recommendations"}
-                </Button>
-              </div>
-            )}
+                    {isLoadingRecommendations ? "Loading..." : "Get Recommendations"}
+                  </Button>
+                </div>
+              )}
           </div>
         </div>
 
@@ -722,14 +751,14 @@ export default function TimetablePage() {
                       onContextMenu={(e) => e.preventDefault()}
                       style={{
                         backgroundImage:
-                          cell.rank === 4 && !cell.course_code
-                            ? `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(147, 51, 234, 0.15) 2px, rgba(147, 51, 234, 0.15) 4px)`
-                            : undefined,
+                        cell.rank === 4 && !cell.course_code
+                          ? `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(147, 51, 234, 0.15) 2px, rgba(147, 51, 234, 0.15) 4px)`
+                          : undefined,
                       }}
                     >
                       {cell.course_code && (
                         <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs pointer-events-none">
-							{timeIndex == 0 ? cell.course_code : (cell.course_code != currentGrid[timeIndex-1][dayIndex].course_code ? cell.course_code : "")}			
+                          {timeIndex == 0 ? cell.course_code : (cell.course_code != currentGrid[timeIndex-1][dayIndex].course_code ? cell.course_code : "")}			
                         </div>
                       )}
                       {cell.preference === "unavailable" && !cell.course_code && (
