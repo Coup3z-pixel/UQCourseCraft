@@ -490,7 +490,7 @@ text-white bg-purple-500 ${ showAlert ? "opacity-100" : "opacity-0" }
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center h-8">
               <img src="/favicon.png" alt="" className="h-full aspect-square bg-white rounded-md"/>
-              <h1 className={`${setSidebarOpen ? "text-xl" : "text-3xl"} font-light text-white ml-2`}>UQ Course Craft</h1>
+              <h1 className={`${sidebarOpen ? "text-xl" : "text-3xl"} font-light text-white ml-2`}>UQ Course Craft</h1>
             </div>
 
             <div className="flex items-center gap-3">
