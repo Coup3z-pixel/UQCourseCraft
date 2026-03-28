@@ -1,7 +1,9 @@
-from classes import Class, Time
-from constants import DAYS, NUMBER_OF_TIME_SLOTS, ALWAYS_AVAILABLE
-from algorithm import solve_timetable, print_schedule
 import time
+
+from algorithm import print_schedule, solve_timetable
+from classes import Class, Time
+from constants import ALWAYS_AVAILABLE, DAYS, NUMBER_OF_TIME_SLOTS
+
 
 def test_fully_fledged_case():
     # All slots are ideal for all days
@@ -20,12 +22,14 @@ def test_fully_fledged_case():
             # Start times: 8.0, 9.5, 11.0, ..., up to 21.5 (all end before 22.0)
             start_time = 8.0 + (t * 0.5)
             if start_time + 1.0 > 22.0:
-                start_time = 20.0 + (t % 2) # fallback to keep within bounds
+                start_time = 20.0 + (t % 2)  # fallback to keep within bounds
             duration = 1.0
-            percent_booked = 10 * (t+1)
+            percent_booked = 10 * (t + 1)
             activity_code = f"{code}_{subclass_type}_{t+1:02d}"
             times.append(Time(activity_code, day, start_time, duration, percent_booked))
-        classes.append(Class(code, class_types[idx%len(class_types)], subclass_type, times))
+        classes.append(
+            Class(code, class_types[idx % len(class_types)], subclass_type, times)
+        )
     print(len(classes))
     before = time.time()
     result = solve_timetable(ALWAYS_AVAILABLE, classes)
@@ -33,5 +37,7 @@ def test_fully_fledged_case():
     print(f"Time taken: {after - before:.2f} seconds")
     print_schedule(result)
 
+
 if __name__ == "__main__":
     test_fully_fledged_case()
+

@@ -1,8 +1,10 @@
-from classes import *
-from constants import *
 import time
+from heapq import heapify, heappop, heappush
 
-from heapq import heapify, heappush, heappop
+from models.Class import Class
+from models.constants import *
+from models.Time import Time
+
 # test
 """
 In this file, we are implementing the timetabling algorithm for UQCourseCraft.
@@ -16,10 +18,15 @@ Output: A dictionary mapping the course code and class type to the ideal prefere
 Current algorithm: recursive backtracking to find the first valid timetable. Only takes into account the time slots.
 """
 
-def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preference_levels: list[int]=STANDARD_LEVELS) -> list[dict]:
+
+def solve_timetable(
+    time_slots: dict[list[int]],
+    classes: list[Class],
+    preference_levels: list[int] = STANDARD_LEVELS,
+) -> list[dict]:
     """
     Solve the timetabling problem by finding the best fit for course classes into user preferences.
-    
+
     Args:
         time_slots (dict): A dictionary mapping days of the week to a list of time slots. Each time slot is given a number between 0 and 3 inclusive.
         0 represents unavailable, 1 represents poor time, 2 represents good time, and 3 represents ideal time. The index of the list is
@@ -27,16 +34,20 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preferenc
         classes (list[Class]): A list of Class objects representing each class the student must take.
 
     Returns:
-        dict: A dictionary of lists where the key is the day of the week and the value is a list of strings representing the 
+        dict: A dictionary of lists where the key is the day of the week and the value is a list of strings representing the
         allocated classes in each half-hour slot, empty classes are represented by an empty string.
-    
+
     Raises:
         ValueError: If no valid timetable can be found or if there are classes that cannot be allocated before running the algorithm.
     """
     ideal = max(preference_levels)
     # Check if there are any classes that cannot be allocated
-    #trim_classes(time_slots, classes)
-    invalid_classes = [class_.course_code + class_.subclass_type for class_ in classes if not class_.times]
+    # trim_classes(time_slots, classes)
+    invalid_classes = [
+        class_.course_code + class_.subclass_type
+        for class_ in classes
+        if not class_.times
+    ]
     if invalid_classes:
         message = f"Cannot allocate: {', '.join(invalid_classes)}. No fitting time slots available."
         raise ValueError(message)
@@ -45,7 +56,7 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preferenc
     classes.sort(key=lambda c: len(c.times))
 
     # Initialize the schedule with empty strings for each time slot
-    schedule = {day: [''] * NUMBER_OF_TIME_SLOTS for day in DAYS}
+    schedule = {day: [""] * NUMBER_OF_TIME_SLOTS for day in DAYS}
     schedule_heap = ScheduleHeap(5)
 
     def backtrack(i: int, score: int, hours_remaining: int) -> bool:
@@ -59,23 +70,33 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preferenc
         """
         if i == len(classes):
             copy = {}  # Calculate the score of the current schedule
-            copy['score'] = score
+            copy["score"] = score
             for day in DAYS:
                 copy[day] = schedule[day].copy()  # Copy the current schedule to output
             schedule_heap.newEntry(score, copy)  # Add the current schedule to the heap
             return True
-        
+
         # IF the current schedule cannot make it onto the top 5 schedules, return False
-        if len(schedule_heap.heap) == schedule_heap.capacity and score + (hours_remaining) * 2 * ideal < schedule_heap.heap[0].score:
+        if (
+            len(schedule_heap.heap) == schedule_heap.capacity
+            and score + (hours_remaining) * 2 * ideal < schedule_heap.heap[0].score
+        ):
             return False
-        
+
         class_ = classes[i]
         for time in class_.times:
             score_added = allocate_class(schedule, time_slots, class_, time)
             if score_added:
-                if backtrack(i+1, score + score_added, hours_remaining-time.duration) and RETURN_FIRST_MATCH:
+                if (
+                    backtrack(
+                        i + 1, score + score_added, hours_remaining - time.duration
+                    )
+                    and RETURN_FIRST_MATCH
+                ):
                     return True
-                deallocate_class(schedule, class_, time)  # Backtrack by removing the class from the schedule
+                deallocate_class(
+                    schedule, class_, time
+                )  # Backtrack by removing the class from the schedule
 
         return False
 
@@ -84,9 +105,11 @@ def solve_timetable(time_slots: dict[list[int]], classes: list[Class], preferenc
         raise ValueError("No valid timetable found.")
     return schedule_heap.getBestSchedules()
 
+
 def total_time(classes: list[Class]) -> int:
     """Calculate the total time required for all classes."""
     return sum([class_.times[0].duration for class_ in classes])
+
 
 def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
     """
@@ -96,14 +119,19 @@ def trim_classes(time_slots: dict[list[int]], classes: list[Class]) -> None:
         working_times = []
         for time in class_.times:
             start_time = int(time.start_time) * 2  # Convert to half-hour increments
-            end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+            end_time = int(
+                (time.start_time + time.duration) * 2
+            )  # Convert to half-hour increments
 
             if sum(time_slots[time.day][start_time:end_time]) > 0:
                 working_times.append(time)
         class_.times = working_times
 
-def allocate_class(schedule: dict,time_slots:dict[list[int]], class_: Class, time: Time) -> int:
-    """"
+
+def allocate_class(
+    schedule: dict, time_slots: dict[list[int]], class_: Class, time: Time
+) -> int:
+    """ "
     Attempt to allocate a class to the schedule. Returns the increase in score if successful, otherwise returns 0.
 
     Args:
@@ -113,27 +141,34 @@ def allocate_class(schedule: dict,time_slots:dict[list[int]], class_: Class, tim
     """
     day = time.day
     start_time = int(time.start_time) * 2  # Convert to half-hour increments
-    end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+    end_time = int(
+        (time.start_time + time.duration) * 2
+    )  # Convert to half-hour increments
     score = 0
-    
+
     for slot in range(start_time, end_time):
         if schedule[day][slot] != "":
             return 0
-        
+
     # If all slots are available, allocate the class
     for slot in range(start_time, end_time):
-        schedule[day][slot] = f"{class_.course_code} {class_.subclass_type} {time.activity_code}"
-        score += time_slots[day][slot]  # Add the score of the time slot to the total score
-        
+        schedule[day][
+            slot
+        ] = f"{class_.course_code} {class_.subclass_type} {time.activity_code}"
+        score += time_slots[day][
+            slot
+        ]  # Add the score of the time slot to the total score
+
     return score  # Successfully allocated the class
 
 
 def deallocate_class(schedule: dict, class_: Class, time: Time) -> None:
-    """    Deallocate a class from the schedule.
-    """
+    """Deallocate a class from the schedule."""
     day = time.day
     start_time = int(time.start_time) * 2
-    end_time = int((time.start_time + time.duration) * 2)  # Convert to half-hour increments
+    end_time = int(
+        (time.start_time + time.duration) * 2
+    )  # Convert to half-hour increments
 
     for slot in range(start_time, end_time):
         schedule[day][slot] = ""  # Remove the class from the schedule
@@ -145,9 +180,11 @@ def print_schedule(schedule: dict) -> None:
     """
     rows = []
     for i in range(48):
-        row = [str(i/2).center(6)]
+        row = [str(i / 2).center(6)]
         for day in DAYS:
             slot = schedule[day][i]
-            row.append(slot.center(15) if slot else '-'.center(15))  # Center the slot text in a 30-character wide cell
+            row.append(
+                slot.center(15) if slot else "-".center(15)
+            )  # Center the slot text in a 30-character wide cell
         rows.append(" | ".join(row))
     print("\n".join(rows[16:44]))

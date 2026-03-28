@@ -1,9 +1,10 @@
-from classes import *
-from constants import *
-
 import requests
+from models import Class
 
-def convertForAlgorithmCourses(courses_activities: list, retrieveLectures = True) -> list[Class]:
+
+def convertForAlgorithmCourses(
+    courses_activities: list, retrieveLectures=True
+) -> list[Class]:
     """
     Converts a list of course activity dictionaries into a list of Class objects for algorithmic processing.
 
@@ -32,7 +33,7 @@ def convertForAlgorithmCourses(courses_activities: list, retrieveLectures = True
         - If no existing Class matches the activity, a new Class is instantiated.
         - The function prints each activity_code during processing for debugging.
     """
-    
+
     classes = []
 
     # Creates the Class instances, with the Time instances inside
@@ -43,30 +44,40 @@ def convertForAlgorithmCourses(courses_activities: list, retrieveLectures = True
             JSON_TO_DAY[course["day"]],
             convertTime(course["start"]),
             convertMinToHours(course["duration"]),
-            50)
-        
+            50,
+        )
+
         # prevent lectures from being instantiated if retrieveLectures is false. Below code for dealing with class instances
-        # are ignored 
+        # are ignored
         if retrieveLectures == False and getClassType(course["class_type"]) == "LEC":
             continue
 
         # if existing class exists, add time to it
         foundClassInstance = False
         for classInstance in classes:
-            if (classInstance.course_code == course["course_code"] 
+            if (
+                classInstance.course_code == course["course_code"]
                 and classInstance.class_type == getClassType(course["class_type"])
                 and classInstance.subclass_type == course["class_type"]
             ):
                 classInstance.add_time(time)
                 foundClassInstance = True
                 break
-        
+
         # if not, create new class and append to classes
-        if (foundClassInstance == False):
+        if foundClassInstance == False:
             times = [time]
-            classes.append(Class(course["course_code"], getClassType(course["class_type"]), course["class_type"], times))
-            
-    return classes 
+            classes.append(
+                Class(
+                    course["course_code"],
+                    getClassType(course["class_type"]),
+                    course["class_type"],
+                    times,
+                )
+            )
+
+    return classes
+
 
 def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
     """
@@ -90,18 +101,24 @@ def convertForAlgorithmTimeSlots(preferences: dict) -> dict[list[int]]:
         - The length of each time slot list is NUMBER_OF_TIME_SLOTS + 1.
     """
 
-    timeslots = {MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
-                 TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
-                 WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
-                 THU: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
-                 FRI: [0 for _ in range(NUMBER_OF_TIME_SLOTS)]}
-    
+    timeslots = {
+        MON: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+        TUE: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+        WED: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+        THU: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+        FRI: [0 for _ in range(NUMBER_OF_TIME_SLOTS)],
+    }
+
     for date, preference in preferences.items():
-        if (preference["preference"] == "preferred"):
-            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_RANK.get(preference["rank"])
+        if preference["preference"] == "preferred":
+            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_RANK.get(
+                preference["rank"]
+            )
         else:
-            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_PREFERENCE.get(preference["preference"])
-        
+            timeslots[getDay(date)][getTimeIndex(date)] = JSON_TO_PREFERENCE.get(
+                preference["preference"]
+            )
+
     return timeslots
 
 
@@ -118,6 +135,7 @@ def convertTime(time: str) -> float:
     hours, minutes = time.split(":")
     return int(hours) + (int(minutes) / 60)
 
+
 def convertActivityNumber(activityNum: str) -> int:
     """
     Extracts and converts the first two characters of an activity code to an integer.
@@ -130,6 +148,7 @@ def convertActivityNumber(activityNum: str) -> int:
     """
     return int(activityNum[:2])
 
+
 def convertMinToHours(duration: str) -> float:
     """
     Converts a duration in minutes to hours as a float.
@@ -141,6 +160,7 @@ def convertMinToHours(duration: str) -> float:
         float: Duration in hours.
     """
     return int(duration) / 60
+
 
 def getClassType(subclass_type: str) -> str:
     """
@@ -161,38 +181,42 @@ def getClassType(subclass_type: str) -> str:
 def convertTimetableToGrid(timetable_dict):
     """
     Convert a timetable dictionary to an 11x5 2D array.
-    
+
     Args:
         timetable_dict (dict): Dictionary with days as keys ('Monday', 'Tuesday', etc.)
                               and lists of time slots as values
-    
+
     Returns:
         list: 11x5 2D array where rows represent time slots and columns represent weekdays
               [Monday, Tuesday, Wednesday, Thursday, Friday]
     """
     # Define the order of weekdays
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    
+    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+
     # Initialize 28x5 grid (11 time slots, 5 weekdays)
     grid = []
 
     # bug: its the whole day
 
-    for timeIndex, _ in enumerate(timetable_dict['Monday']):
+    for timeIndex, _ in enumerate(timetable_dict["Monday"]):
         row = []
-        for _, day in enumerate(weekdays): 
+        for _, day in enumerate(weekdays):
 
             if timetable_dict[day][timeIndex] != "":
-                row.append([{
-                    "course_code": timetable_dict[day][timeIndex],
-                    "preferences": "preferred",
-                    "rank": 1
-                  }])
+                row.append(
+                    [
+                        {
+                            "course_code": timetable_dict[day][timeIndex],
+                            "preferences": "preferred",
+                            "rank": 1,
+                        }
+                    ]
+                )
             else:
                 row.append([])
 
         grid.append(row)
-    
+
     return grid
 
 
@@ -210,6 +234,7 @@ def getDay(date: str) -> str:
 
     return JSON_TO_DAY2.get(date.split("-")[0])
 
+
 def getTimeIndex(date: str) -> int:
     """
     Calculates the time slot index from a date string.
@@ -224,5 +249,3 @@ def getTimeIndex(date: str) -> int:
     time = date.split("-")[1]
     index = convertTime(time) * 2
     return int(index)
-
-

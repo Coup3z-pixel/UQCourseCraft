@@ -1,0 +1,41 @@
+class Time:
+    def __init__(
+        self,
+        activity_code: str,
+        day: str,
+        start_time: float,
+        duration: float,
+        percent_booked: int,
+    ) -> None:
+        """
+        Initialize a class with the activity number, day, start time, duration, and percentage booked.
+
+        Args:
+            activity_number (int): The index of the activity in the schedule.
+            day (str): The day of the week the class is scheduled.
+            start_time (float): The start time of the class in military format (e.g., 13.5 for 1:30 PM).
+            duration (int): The duration of the class in hours.
+            percent_booked (int): The percentage of people that booked into the class compared to its capacity.
+        """
+        self.activity_code = activity_code
+        self.day = day
+        self.start_time = start_time
+        self.duration = duration
+        self.percent_booked = percent_booked
+
+    def __repr__(self) -> str:
+        return f"""Time(activity_number={self.activity_code}, 
+            day={self.day}, 
+            start_time={self.start_time}, 
+            duration={self.duration}, 
+            percent_booked={self.percent_booked})
+        """
+
+    def __eq__(self, other) -> bool:
+        return (
+            self.activity_number == other.activity_number
+            and self.day == other.day
+            and self.start_time == other.start_time
+            and self.duration == other.duration
+            and self.percent_booked == other.percent_booked
+        )
